@@ -1,0 +1,385 @@
+{
+	"info": {
+		"_postman_id": "34b13d48-0dac-4fd7-9e4e-abfb4d610412",
+		"name": "Node.js 기본 가이드 API",
+		"description": "Variables (참고바랍니다.)\n\nsecret : Bearer testNODE!\n\napi_url : [http://localhost:4000/api](http://localhost:4000/api)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21452034",
+		"_collection_link": "https://diotio97.postman.co/workspace/%EA%B9%80%ED%9A%A8%EC%A7%84-Workspace~2d7b3a5c-0b55-4182-8b97-9c4886dbfc1b/collection/21452034-34b13d48-0dac-4fd7-9e4e-abfb4d610412?action=share&source=collection_link&creator=21452034"
+	},
+	"item": [
+		{
+			"name": "회원관리",
+			"item": [
+				{
+					"name": "회원 리스트",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{secret}}"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "mt_idx",
+									"value": "3",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}/user?page=1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"user"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "페이지"
+								},
+								{
+									"key": "sdate",
+									"value": "2024-07-12",
+									"description": "시작일",
+									"disabled": true
+								},
+								{
+									"key": "edate",
+									"value": "2024-08-01",
+									"description": "끝일",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "김이름",
+									"description": "검색어",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "m.mt_name",
+									"description": "검색필터",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "회원추가",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{secret}}"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "mt_name",
+									"value": "김이름",
+									"description": "이름",
+									"type": "text"
+								},
+								{
+									"key": "mt_id",
+									"value": "test1",
+									"description": "아이디",
+									"type": "text"
+								},
+								{
+									"key": "mt_pwd",
+									"value": "1016",
+									"description": "비밀번호",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}/user",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "회원 영구삭제",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{secret}}"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "mt_idx",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}/user",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "게시판",
+			"item": [
+				{
+					"name": "게시글 조회",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{secret}}"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "mt_idx",
+									"value": "3",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}/board?page=1",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"board"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "sdate",
+									"value": "2024-07-12",
+									"description": "시작일",
+									"disabled": true
+								},
+								{
+									"key": "edate",
+									"value": "2024-08-01",
+									"description": "끝일",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "김이름",
+									"description": "검색어",
+									"disabled": true
+								},
+								{
+									"key": "filter",
+									"value": "m.mt_name",
+									"description": "검색필터",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "게시글 작성 (이미지 첨부)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{secret}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "bt_mt_idx",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "bt_title",
+									"value": "제목입니다.",
+									"type": "text"
+								},
+								{
+									"key": "bt_content",
+									"value": "내용입니다.",
+									"type": "text"
+								},
+								{
+									"key": "bt_thumbnail",
+									"type": "file",
+									"src": "/Users/corp.dmonster/Desktop/샘플이미지/식품/dose-juice--FKE4iLtDUo-unsplash.jpg",
+									"disabled": true
+								},
+								{
+									"key": "bt_image",
+									"type": "file",
+									"src": [
+										"/Users/corp.dmonster/Desktop/샘플이미지/배경/benjamin-voros-phIFdC6lA4E-unsplash.jpg",
+										"/Users/corp.dmonster/Desktop/샘플이미지/배경/casey-horner-G2jAOMGGlPE-unsplash.jpg",
+										"/Users/corp.dmonster/Desktop/샘플이미지/배경/charlota-blunarova-xWqLelotj58-unsplash.jpg"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}/board",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"board"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "로그인",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{secret}}"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "mt_id",
+							"value": "test1",
+							"type": "text"
+						},
+						{
+							"key": "mt_pwd",
+							"value": "1016",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{api_url}}/auth/login",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					],
+					"query": [
+						{
+							"key": "sdate",
+							"value": "2024-07-12",
+							"description": "시작일",
+							"disabled": true
+						},
+						{
+							"key": "edate",
+							"value": "2024-08-01",
+							"description": "끝일",
+							"disabled": true
+						},
+						{
+							"key": "search",
+							"value": "김이름",
+							"description": "검색어",
+							"disabled": true
+						},
+						{
+							"key": "filter",
+							"value": "m.mt_name",
+							"description": "검색필터",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "secret",
+			"value": "Bearer testNODE!",
+			"type": "string"
+		},
+		{
+			"key": "api_url",
+			"value": "http://localhost:4000/api",
+			"type": "string"
+		}
+	]
+}
