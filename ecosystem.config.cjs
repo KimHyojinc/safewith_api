@@ -14,36 +14,6 @@ module.exports = {
       },
       output: "~/logs/pm2/console.log", // 로그 출력 경로 재설정
       error: "~/logs/pm2/consoleError.log", // 에러 로그 출력 경로 재설정
-    },
-    {
-      name: 'crontab1',
-      namespace: '4대보험 발송',
-      script: "./src/crontab/crontab1.js",
-      max_memory_restart: "300M",
-    },
-    {
-      name: 'crontab2',
-      namespace: '주간 계약근무 초과 발송',
-      script: "./src/crontab/crontab2.js",
-      max_memory_restart: "300M",
-    },
-    {
-      name: 'crontab3',
-      namespace: '주휴수당 적용',
-      script: "./src/crontab/crontab3.js",
-      max_memory_restart: "300M",
-    },
-    {
-      name: 'crontab4',
-      namespace: '인건비 발송',
-      script: "./src/crontab/crontab4.js",
-      max_memory_restart: "300M",
-    },
-    {
-      name: 'crontab5',
-      namespace: '액션로그 관리',
-      script: "./src/crontab/crontab5.js",
-      max_memory_restart: "300M",
     }
   ],
 };
