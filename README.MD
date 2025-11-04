@@ -1,0 +1,9 @@
+## ENV
+- PORT=4001
+- DB_NAME=PlatformDb
+- DB_USER=izen
+- DB_PASSWORD=izen
+- DB_HOST=139.150.82.72
+- DB_PORT=54694
+- JWT_SECRET=safewithJWTSecretKey
+- JWT_EXPIRES_IN=1h
