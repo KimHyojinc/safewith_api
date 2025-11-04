@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import moment from 'moment';
-import { initModels } from '../../../models/init-models';
-import { cryptoHashPassword, verifyPassword } from '../../../middleware/util';
-import { models } from '../../../data-source';
+import { initModels } from '../../models/init-models';
+import { cryptoHashPassword, verifyPassword } from '../../middleware/util';
+import { models } from '../../data-source';
 
 // sha256 해시처리하고 base64로 변환 확인
 async function GetTestAuth(req: Request, res: Response) {

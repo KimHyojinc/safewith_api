@@ -3,8 +3,8 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import path from "path";
 
-dotenv.config({ path: path.join(__dirname, `/config/.env`) });
-const secretKey = 'testNODE!';
+dotenv.config();
+const secretKey = process.env.JWT_SECRET || 'defaultSecretKey';
 
 async function checkAuth(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.get("Authorization");

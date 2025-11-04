@@ -1,11 +1,11 @@
 import express from "express";
-import checkAuth from "../../middleware/checkAuth";
+import checkAuth from "../middleware/checkAuth";
 import multer from "multer";
 import path from "path";
-import TalkAuth from "../../middleware/talkAuth";
-import GetCustList from "../../service/web/cust/getCustList";
+import Login from "../service/auth/login";
+import GetEXSiteList from "../service/auth/getEXSiteList";
 
-const webCustRouter = express.Router();
+const tabletAuthRouter = express.Router();
 
 // Multer 설정: 업로드된 파일을 'uploads/' 디렉토리에 저장
 const storage = multer.diskStorage({
@@ -18,8 +18,10 @@ const storage = multer.diskStorage({
   });
 const upload = multer({ storage: storage });
 
-webCustRouter.get('/list', checkAuth, GetCustList);
+
+tabletAuthRouter.post('/admin/login', Login);
+tabletAuthRouter.post('/site/list', GetEXSiteList);
 // webCustRouter.post('/add', checkAuth, TalkAuth, upload.single('file'), AddQna);
 // webCustRouter.get('/detail', checkAuth, GetDetail);
 
-export default webCustRouter;
+export default tabletAuthRouter;

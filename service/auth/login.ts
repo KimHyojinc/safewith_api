@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import moment from 'moment';
-import { models } from '../../../data-source';
-import { dev_mode, verifyPassword } from '../../../middleware/util';
+import { models } from '../../data-source';
+import { dev_mode, verifyPassword } from '../../middleware/util';
 
 async function Login(req: Request, res: Response) {
     const { id, pw } = req.body;
@@ -23,6 +23,7 @@ async function Login(req: Request, res: Response) {
         if(!userInstance) {
             return res.status(404).json({ result: false, msg: '존재하지 않는 회원 아이디입니다.' });
         } else {
+            // plain: javascript 객체로 변환
             const userInfo = userInstance.get({ plain: true });
 
             if(userInfo.is_del == 'Y') {
@@ -53,7 +54,7 @@ async function Login(req: Request, res: Response) {
                     if(accountInfo.auth_code == 46) {
                         
                     }
-
+                    return res.status(200).json({ result: true, msg: '로그인 성공', data: accountInfo });
                 } else {
                     return res.status(404).json({ result: false, msg: '존재하지 않는 회원 아이디입니다.' });
                 }

@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import path from "path";
 import axios from "axios";
 
-dotenv.config({ path: path.join(__dirname, `/config/.env`) });
+dotenv.config();
 const secretKey = 'workpleNODE!';
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;

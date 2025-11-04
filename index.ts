@@ -6,9 +6,8 @@ import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
 import moment from 'moment-timezone';
-import webCustRouter from "./router/web/webCustRouter";
-import webAuthRouter from "./router/web/webAuthRouter";
 import { initDb } from "./data-source";
+import tabletAuthRouter from "./router/tabletAuthRouter";
 moment.tz.setDefault("Asia/Seoul");
 
 
@@ -28,12 +27,6 @@ const port = process.env.PORT;
 
 export const app = express();
 
-//uploads 폴더가 없으면 생성
-// app.set("url", process.env.URL);
-// app.set("tracker", process.env.TRACKER);
-// app.set("imp_key", process.env.IMPORTKEY);
-// app.set("imp_secret_key", process.env.IMPORTSECRET);
-
 app.use(cors());
 app.use(morgan("dev"));
 // app.use(express.raw({ type: '*/*' }));
@@ -46,8 +39,7 @@ app.use("/api/upload", express.static(path.join(__dirname, "../../uploads")));
 app.use("/api/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // API
-app.use("/api/web/cust", webCustRouter); // 웹 협력사 정보
-app.use("/api/web/auth", webAuthRouter); // 웹 로그인 / 회원가입
+app.use("/api/tablet", tabletAuthRouter); // 웹 로그인 / 회원가입
 // app.use("/api/auth", authRouter);
 // app.use("/api/board", boardRouter);
 
