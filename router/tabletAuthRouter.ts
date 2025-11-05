@@ -21,7 +21,8 @@ const upload = multer({ storage: storage });
 
 
 tabletAuthRouter.get('/test/pw', GetTestAuth);
-tabletAuthRouter.post('/admin/login', Login);
+tabletAuthRouter.post('/login/admin', Login);
+// tabletAuthRouter.post('/worker/login', Login);??
 tabletAuthRouter.post('/site/list', GetEXSiteList);
 // webCustRouter.post('/add', checkAuth, TalkAuth, upload.single('file'), AddQna);
 // webCustRouter.get('/detail', checkAuth, GetDetail);

@@ -6,6 +6,7 @@ import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
 import moment from 'moment-timezone';
+import cookieParser from "cookie-parser";
 import { initDb } from "./data-source";
 import tabletAuthRouter from "./router/tabletAuthRouter";
 moment.tz.setDefault("Asia/Seoul");
@@ -33,6 +34,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(cookieParser());
 
 // *queryBuilder docs : https://orkhan.gitbook.io/typeorm/docs/select-query-builder#how-to-create-and-use-a-querybuilder
 app.use("/api/upload", express.static(path.join(__dirname, "../../uploads")));

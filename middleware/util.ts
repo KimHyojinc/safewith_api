@@ -73,3 +73,74 @@ export function verifyPassword(inputPassword: string, storedHash: string): boole
   return crypto.timingSafeEqual(inputBuf, storedBuf);
 }
 
+// 2025-11-05 added
+// Base64 → UTF-8 문자열 디코더
+export function convertBase64ToString(base64Str: string): string {
+  if (typeof base64Str !== "string") {
+    throw new TypeError("base64Str must be a string");
+  }
+
+  // 필요시: 공백 허용을 원치 않으면 이 줄 제거(현재는 공백 미허용)
+  const s = base64Str; // .replace(/\s+/g, "")  // ← 공백 허용하려면 주석 해제
+
+  // variant auto-detect
+  const isUrlSafe = /[-_]/.test(s);
+  const base64Body = s;
+
+  // 1) 문자 집합 & 패딩 형태 검증 (끝 이외 위치의 '=' 금지)
+  const reStandard = /^[A-Za-z0-9+/]*={0,2}$/;
+  const reUrlSafe  = /^[A-Za-z0-9\-_]*={0,2}$/;
+  const validAlphabet = (isUrlSafe ? reUrlSafe : reStandard).test(base64Body);
+  if (!validAlphabet) {
+    throw new Error("Invalid Base64 alphabet or misplaced padding");
+  }
+
+  // 2) 길이와 패딩 개연성 검증
+  const padCount = (base64Body.match(/=+$/)?.[0].length) ?? 0;
+  if (padCount > 2) {
+    throw new Error("Invalid Base64 padding");
+  }
+  // '='가 있으면 길이는 반드시 4의 배수여야 함
+  if (padCount > 0 && base64Body.length % 4 !== 0) {
+    throw new Error("Invalid Base64 length with padding");
+  }
+  // 길이 % 4 == 1 은 절대 불가
+  if (base64Body.length % 4 === 1) {
+    throw new Error("Invalid Base64 length");
+  }
+
+  // 3) URL-safe → 표준형 치환
+  let normalized = isUrlSafe
+    ? base64Body.replace(/-/g, "+").replace(/_/g, "/")
+    : base64Body;
+
+  // 4) 패딩 누락 보정 (len % 4 == 2 또는 3 인 경우만)
+  if (padCount === 0 && normalized.length % 4 !== 0) {
+    const rem = normalized.length % 4; // 2 or 3만 가능
+    if (rem === 2 || rem === 3) {
+      normalized = normalized + "=".repeat(4 - rem);
+    } else {
+      // rem === 1 은 위에서 이미 걸러짐
+      throw new Error("Invalid Base64 length (cannot be fixed by padding)");
+    }
+  }
+
+  // 5) 디코드 (사전 검증을 했으므로 관대한 디코더여도 안전)
+  try {
+    // Node 등
+    if (typeof Buffer !== "undefined" && typeof (Buffer as any).from === "function") {
+      const bytes = Buffer.from(normalized, "base64");
+      return new TextDecoder("utf-8").decode(bytes);
+    }
+    // 브라우저
+    if (typeof atob !== "undefined") {
+      const binary = atob(normalized);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      return new TextDecoder("utf-8").decode(bytes);
+    }
+    throw new Error("No base64 decoder available in this environment");
+  } catch (e) {
+    throw new Error(`Invalid Base64 string: ${(e as Error).message}`);
+  }
+}
