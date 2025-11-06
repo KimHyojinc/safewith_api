@@ -5,6 +5,9 @@ import path from "path";
 import Login from "../service/auth/login";
 import GetEXSiteList from "../service/auth/getEXSiteList";
 import GetTestAuth from "../service/auth/getTestAuth";
+import Logout from '../service/auth/logout';
+import LoginWorker from '../service/auth/loginWorker';
+import { auth } from '../middleware/auth';
 
 const tabletAuthRouter = express.Router();
 
@@ -22,8 +25,9 @@ const upload = multer({ storage: storage });
 
 tabletAuthRouter.get('/test/pw', GetTestAuth);
 tabletAuthRouter.post('/login/admin', Login);
-// tabletAuthRouter.post('/worker/login', Login);??
-tabletAuthRouter.post('/site/list', GetEXSiteList);
+tabletAuthRouter.post('/login/worker', LoginWorker);
+tabletAuthRouter.post('/logout', Logout);
+tabletAuthRouter.post('/site/list', auth, GetEXSiteList);
 // webCustRouter.post('/add', checkAuth, TalkAuth, upload.single('file'), AddQna);
 // webCustRouter.get('/detail', checkAuth, GetDetail);
 
