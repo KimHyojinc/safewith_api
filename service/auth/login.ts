@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import moment from 'moment';
 import { models } from '../../data-source';
 import { convertBase64ToString, dev_mode, verifyPassword } from '../../middleware/util';
 import { generateToken } from '../../middleware/jwt';

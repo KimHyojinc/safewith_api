@@ -1,5 +1,6 @@
 import moment from "moment";
 import 'moment/locale/ko';
+import axios from "axios";
 import bcrypt from 'bcrypt'
 import sharp from "sharp";
 import crypto from 'crypto';
@@ -149,4 +150,13 @@ export function convertBase64ToString(base64Str: string): string {
   } catch (e) {
     throw new Error(`Invalid Base64 string: ${(e as Error).message}`);
   }
+}
+
+// file download 
+export async function downloadFileAsync(url: string): Promise<Buffer> {
+  const response = await axios.get(url, {
+    responseType: 'arraybuffer' // 중요: 바이너리 응답으로 받기
+  });
+
+  return Buffer.from(response.data);
 }

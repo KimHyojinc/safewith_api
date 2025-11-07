@@ -5,6 +5,8 @@ import { auth } from '../middleware/auth';
 import GetEduList from '../service/edu/getEduList';
 import GetEduDetail from '../service/edu/getEduDetail';
 import GetEduContentsDetail from '../service/edu/getEduContentsDetail';
+import GetEduThumbnail from '../service/edu/getEduThumbnail';
+import GetEduMovie from '../service/edu/getEduMovie';
 
 const tabletEduRouter = express.Router();
 
@@ -23,5 +25,7 @@ const upload = multer({ storage: storage });
 tabletEduRouter.post('/edulist', auth, GetEduList);
 tabletEduRouter.post("/edudetail", auth, GetEduDetail);
 tabletEduRouter.post("/edu/contents", auth, GetEduContentsDetail);
+tabletEduRouter.get("/edu/thumbnail/:edu_contents_code", GetEduThumbnail);
+tabletEduRouter.get("/edumovie/:edu_sch_code", GetEduMovie);
 
 export default tabletEduRouter;

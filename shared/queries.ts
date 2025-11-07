@@ -1,19 +1,25 @@
 import { Op, QueryTypes } from 'sequelize';
 import { models, sequelize } from '../data-source';
 import { SiteNameDto } from './site-name';
+import { EduSchInfo } from './edu';
 
 // tb_lib에서 group_name과 code를 기준으로 label 조회
 export async function queryLibLabel(groupName: string, code: number) {
-  const result = await models.tb_lib.findOne({
-    where: { group_name: groupName, code },
-    attributes: ['view_text']
-  });
-
-  return result?.view_text ?? null;
+  try {
+    const result = await models.tb_lib.findOne({
+      where: { group_name: groupName, code },
+      attributes: ['view_text']
+    });
+  
+    return result?.view_text ?? null;
+  } catch (error) {
+    throw new Error('queryLibLabel failed -- ' + error);
+  }
 }
 
 // 현장 리스트 조회
 export async function querySites(client_code: number = -1) {
+  try {
     const rows = await models.tb_site_of_client.findAll({
         include: [{
             model: models.tb_site,
@@ -46,6 +52,9 @@ export async function querySites(client_code: number = -1) {
     }
 
     return items;
+  } catch (error) {
+    throw new Error('querySites failed -- ' + error);
+  }
 }
 
 // 현장별 + 회원에 대한 교육 미완료 리스트 
@@ -115,28 +124,32 @@ export async function queryEduSch(
 
 // Edu detail 가져오는 쿼리
 export async function queryEduDetail(code: number) {
-  const result = await sequelize.query(
-    `
-    SELECT 
-      E.*, 
-      A.name AS reg_name,
-      C.file_name, 
-      C.file_path,
-      C.thumbnail
-    FROM tb_edu E
-    LEFT JOIN tb_account A ON E.register_code = A.code
-    LEFT JOIN tb_edu_contents C ON E.code = C.edu_code
-    WHERE E.code = :code
-    LIMIT 1
-    `,
-    {
-      replacements: { code },
-      type: QueryTypes.SELECT,
-      plain: true  // when getting only one row
-    }
-  );
-
-  return result;
+  try {
+    const result = await sequelize.query(
+      `
+      SELECT 
+        E.*, 
+        A.name AS reg_name,
+        C.file_name, 
+        C.file_path,
+        C.thumbnail
+      FROM tb_edu E
+      LEFT JOIN tb_account A ON E.register_code = A.code
+      LEFT JOIN tb_edu_contents C ON E.code = C.edu_code
+      WHERE E.code = :code
+      LIMIT 1
+      `,
+      {
+        replacements: { code },
+        type: QueryTypes.SELECT,
+        plain: true  // when getting only one row
+      }
+    );
+  
+    return result;
+  } catch (error) {
+    throw new Error('queryEduDetail failed -- ' + error);
+  }
 }
 
 // 교육컨텐츠코드로 교육컨텐츠 가져오는 쿼리
@@ -151,5 +164,41 @@ export async function queryEduContentsWithCode(edu_contents_code: number) {
     return result;
   } catch (error) {
     throw new Error('queryEduContentsWithCode failed -- ' + error);
+  }
+}
+
+// Edu Schedule Info를 가져오는 쿼리
+export async function queryEduSchInfo(edu_sch_code: number) {
+  try {
+    const result = sequelize.query(
+      `
+      SELECT
+        ES.*,
+        A.name AS reg_name,
+        C.file_name AS file_name,
+        C.file_path AS file_path,
+        E.subject AS subject,
+        E.contents AS contents,
+        E.exp_begin AS exp_begin,
+        E.exp_end AS exp_end,
+        E.type_code AS type_code,
+        E.const_type_code AS const_type_code
+      FROM tb_edu_sch ES
+        LEFT JOIN tb_account A ON ES.register_code = A.code
+        LEFT JOIN tb_edu E ON E.code = ES.edu_code
+        LEFT JOIN tb_edu_contents C ON E.code = C.edu_code
+      WHERE ES.code = :edu_sch_code
+      `,
+      {
+        replacements: { edu_sch_code },
+        type: QueryTypes.SELECT,
+        raw: true,
+        plain: true
+      }
+    );
+
+    return result;
+  } catch (error) {
+    throw new Error('queryEduSchInfo failed -- ' + error);
   }
 }
