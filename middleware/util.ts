@@ -73,6 +73,12 @@ export function verifyPassword(inputPassword: string, storedHash: string): boole
   return crypto.timingSafeEqual(inputBuf, storedBuf);
 }
 
+// 2025-11-07 added
+// fileName의 확장자를 변경하는 함수
+export function changeExtension(fileName: string, newExtension: string): string {
+  return fileName.replace(/\.[^/.]+$/, newExtension);
+}
+
 // 2025-11-05 added
 // Base64 → UTF-8 문자열 디코더
 export function convertBase64ToString(base64Str: string): string {

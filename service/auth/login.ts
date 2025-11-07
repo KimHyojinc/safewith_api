@@ -5,8 +5,9 @@ import { convertBase64ToString, dev_mode, verifyPassword } from '../../middlewar
 import { generateToken } from '../../middleware/jwt';
 import { setAuthCookie } from '../../middleware/auth';
 import { ResultData } from '../../shared/result';
-import { ADMIN_TYPE } from '../../shared/admin';
+import { ADMIN_TYPE } from '../../shared/enums';
 
+// [2025-11-07] NOTE: 혹시 나중에 admin, worker 구분해야하면, jwt payload로 구분
 async function Login(req: Request, res: Response) {
     const { id, pw } = req.body;
     
@@ -44,7 +45,7 @@ async function Login(req: Request, res: Response) {
             // tb_lib의 AUTH_CODE 참조
             const accountInfo = accountInstance.get({ plain: true });
 
-            if (accountInfo.auth_code === ADMIN_TYPE.AT_None) {
+            if (accountInfo.auth_code === ADMIN_TYPE.NONE) {
                 return res.status(403).json({ result: false, message: '관리자 권한이 없음!!' });
             }
 

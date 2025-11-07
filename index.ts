@@ -9,6 +9,7 @@ import moment from 'moment-timezone';
 import cookieParser from "cookie-parser";
 import { initDb } from "./data-source";
 import tabletAuthRouter from "./router/tabletAuthRouter";
+import tabletEduRouter from './router/tabletEduRouter';
 moment.tz.setDefault("Asia/Seoul");
 
 
@@ -42,6 +43,7 @@ app.use("/api/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // API
 app.use("/api/tablet", tabletAuthRouter); // 웹 로그인 / 회원가입
+app.use("/api/tablet", tabletEduRouter);
 // app.use("/api/auth", authRouter);
 // app.use("/api/board", boardRouter);
 
