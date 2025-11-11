@@ -2,10 +2,11 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import { auth } from '../middleware/auth';
-import RegBp from '../service/bpal/regBp';
-import RegAl from '../service/bpal/regAl';
+import QrLogin from '../service/duty/qrLogin';
+//import QrTag from '../service/duty/qrTag';
+//import QrAccountLogin from '../service/duty/qrAccountLogin';
 
-const tabletBpalRouter = express.Router();
+const tabletDutyRouter = express.Router();
 
 // Multer 설정: 업로드된 파일을 'uploads/' 디렉토리에 저장
 const storage = multer.diskStorage({
@@ -18,7 +19,9 @@ const storage = multer.diskStorage({
   });
 const upload = multer({ storage: storage });
 
-tabletBpalRouter.post('/bpreg', RegBp);
-tabletBpalRouter.post('/alreg', RegAl);
+tabletDutyRouter.post('/qrlogin', QrLogin);
+//tabletDutyRouter.post('/qrtag', QrTag);
+//tabletDutyRouter.post('/qraccount', QrAccountLogin);
 
-export default tabletBpalRouter;
+
+export default tabletDutyRouter;

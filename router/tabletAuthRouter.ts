@@ -19,13 +19,10 @@ const storage = multer.diskStorage({
   });
 const upload = multer({ storage: storage });
 
-
 tabletAuthRouter.get('/test/pw', GetTestAuth);
 tabletAuthRouter.post('/login/admin', Login);
 tabletAuthRouter.post('/login/worker', LoginWorker);
 tabletAuthRouter.post('/logout', Logout);
 tabletAuthRouter.post('/site/list', auth, GetEXSiteList);
-// webCustRouter.post('/add', checkAuth, TalkAuth, upload.single('file'), AddQna);
-// webCustRouter.get('/detail', checkAuth, GetDetail);
 
 export default tabletAuthRouter;

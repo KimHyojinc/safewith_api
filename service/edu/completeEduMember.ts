@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { saveCompleteMemberInfo, queryEduExamContentsWithEduCode, queryEduExamInfoWithEduCode } from '../../shared/queries';
+import { saveCompleteMemberInfo } from '../../shared/queries';
 import moment from 'moment';
 
 // @POST 교육 시험 완료

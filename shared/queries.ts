@@ -2,7 +2,7 @@ import { Op, QueryTypes } from 'sequelize';
 import { models, sequelize } from '../data-source';
 import { SiteNameDto } from './site-name';
 import moment from 'moment';
-import { tb_accountAttributes, tb_contractAttributes, tb_health_bpAttributes } from '../models/init-models';
+import { tb_accountAttributes, tb_contractAttributes, tb_health_alcoholAttributes, tb_health_bpAttributes } from '../models/init-models';
 
 // tb_lib에서 group_name과 code를 기준으로 label 조회
 export async function queryLibLabel(groupName: string, code: number) {
@@ -418,16 +418,127 @@ export async function saveHealthInfoBP(item: tb_health_bpAttributes) {
 
       return !!result;
     } else {
+      
       // UPDATE
       healthBP.bp_max = item.bp_max;
       healthBP.bp_min = item.bp_min;
-      healthBP.measure_dt = item.measure_dt;
+      // healthBP.measure_dt = item.measure_dt;
       healthBP.reg_dt = item.reg_dt;
+
+      // healthBP.changed('bp_max', true);
+      // healthBP.changed('bp_min', true);
+      // healthBP.changed('reg_dt', true);
 
       await healthBP.save();
       return true;
     }
+    
   } catch (error) {
     throw new Error('saveHealthInfoBP error -- ' + error);
+  }
+}
+
+// 건강정보등록(음주량) 쿼리
+export async function saveHealthInfoAL(item: tb_health_alcoholAttributes) {
+  try {
+    const healthAL = await models.tb_health_alcohol.findOne({
+      where: {
+        account_code: item.account_code,
+        site_code: item.site_code,
+        measure_dt: item.measure_dt
+      }
+    });
+
+    if (!healthAL) {
+      // INSERT
+      const result = await models.tb_health_alcohol.create({
+        site_code: item.site_code,
+        account_code: item.account_code,
+        measures: item.measures ?? 0,
+        measure_dt: item.measure_dt, // string or Date 타입 가능 (timestamp)
+        reg_dt: item.reg_dt    
+      } as any);
+
+      return !!result;
+    } else {
+      
+      // UPDATE
+      healthAL.measures = item.measures ?? 0;
+      // healthAL.measure_dt = item.measure_dt;
+      healthAL.reg_dt = item.reg_dt;
+
+      await healthAL.save();
+      return true;
+    }
+    
+  } catch (error) {
+    throw new Error('saveHealthInfoAL error -- ' + error);
+  }
+}
+
+// QR체크를 위한 계정정보를 가져오는 쿼리
+export async function queryAccountInfoWithMobile(mobile: string) {
+  try {
+    const result = await models.tb_account.findOne({
+      where: {
+        mobile
+      }
+    });
+
+    return result;
+  } catch (error) {
+    throw new Error('queryAccountInfoWithMobile error -- ' + error);
+  }
+}
+
+// 현장고유코드로 현장 정보 가져오는 쿼리
+export async function querySiteInfo(site_code: number) {
+  try {
+    const result = await models.tb_site.findOne({
+      where: {
+        code: site_code
+      }
+    });
+
+    return result;
+  } catch (error) {
+    throw new Error('querySiteInfo error -- ' + error);
+  }
+}
+
+// site_code와 account_code로 reg_dt 내림차순 기준 첫 번째 row(계약정보)를 가져오는 쿼리
+export async function queryContractInfoWithSite(site_code: number, account_code: number) {
+  try {
+    type ContractInfoWithExtra = tb_contractAttributes & { sosok: string; };
+
+    const result = await sequelize.query<ContractInfoWithExtra>(
+      `
+      SELECT 
+          A.name, A.state_code, A.allowed_code, A.mobile, 
+          C.*, 
+          P.name AS sosok, 
+          S.name AS site_name
+        FROM tb_contract C
+          LEFT JOIN tb_account A ON C.account_code = A.code
+          LEFT JOIN tb_partner P ON C.partner_code = P.code 
+          LEFT JOIN tb_partner_contract PC ON P.code = PC.partner_code AND PC.site_code = C.site_code
+          LEFT JOIN tb_site S ON C.site_code = S.code
+        WHERE 
+          C.account_code = :account_code 
+          AND C.site_code = :site_code
+        ORDER BY C.reg_dt DESC
+        LIMIT 1
+      `,
+      {
+        replacements: { account_code, site_code },
+        type: QueryTypes.SELECT,
+        raw: true,
+        plain: true
+      }
+    );
+  
+    return result;
+  } catch (error) {
+    throw new Error('queryContractInfoWithSite error -- ' + error);
   }
 }

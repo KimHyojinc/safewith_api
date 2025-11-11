@@ -27,7 +27,6 @@ const storage = multer.diskStorage({
   });
 const upload = multer({ storage: storage });
 
-
 tabletEduRouter.post("/edulist", auth, GetEduList);
 tabletEduRouter.post("/edudetail", auth, GetEduDetail);
 tabletEduRouter.post("/edu/contents", auth, GetEduContentsDetail);

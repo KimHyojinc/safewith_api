@@ -11,6 +11,7 @@ import { initDb } from "./data-source";
 import tabletAuthRouter from "./router/tabletAuthRouter";
 import tabletEduRouter from './router/tabletEduRouter';
 import tabletBpalRouter from './router/tabletBpalRouter';
+import tabletDutyRouter from './router/tabletDutyRouter';
 moment.tz.setDefault("Asia/Seoul");
 
 
@@ -46,6 +47,7 @@ app.use("/api/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/api/tablet", tabletAuthRouter); // 로그인
 app.use("/api/tablet", tabletEduRouter); // 교육
 app.use("/api/tablet", tabletBpalRouter); // 혈압/음주 측정
+app.use("/api/tablet", tabletDutyRouter); // 혈압/음주 측정
 // app.use("/api/auth", authRouter);
 // app.use("/api/board", boardRouter);
 

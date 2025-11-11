@@ -6,7 +6,7 @@ export enum CommuteState {
   NO_COMMUTE = 2,    // 미출역
   EARLY_COMMUTE = 3, // 조퇴
   NOT_ADMIT = 4,     // 출역불가
-  NONE = 0           // 없음 (C#의 CC_None)
+  NONE = -1           // 없음 (C#의 CC_None)
 }
 
 // 교육 구분
@@ -15,14 +15,14 @@ export enum EduType {
   TOTAL = 6,         // 전체교육
   NEW = 7,           // 신규교육
   REGULAR = 8,       // 정기교육
-  NONE = 0           // ET_None
+  NONE = -1           // ET_None
 }
 
 // 공사 구분
 export enum ConstClass {
   PRIVATE = 9,       // 민간공사
   PUBLIC = 10,       // 공공공사
-  NONE = 0           // CC_None
+  NONE = -1           // CC_None
 }
 
 // 공종 구분
@@ -31,7 +31,7 @@ export enum ConstType {
   GENERAL = 12,      // 일반
   CIVIL = 13,        // 토목
   ELECTRIC = 14,     // 전기
-  NONE = 0           // CT_None
+  NONE = -1           // CT_None
 }
 
 // 직종
@@ -39,7 +39,7 @@ export enum JobType {
   GENERAL = 15,      // 일반근로자
   ELECTRIC = 16,     // 전기
   CIVIL = 17,        // 토목
-  NONE = 0           // JT_None
+  NONE = -1           // JT_None
 }
 
 // 은행
@@ -53,7 +53,7 @@ export enum BankName {
   CITY = 24,       // 한국씨티
   IBK = 25,        // IBK기업
   SUHYUP = 26,     // 수협
-  NONE = 0
+  NONE = -1
 }
 
 // 혈액형
@@ -62,7 +62,7 @@ export enum BloodType {
   B = 28,          // B형
   AB = 29,         // AB형
   O = 30,          // O형
-  NONE = 0
+  NONE = -1
 }
 
 // 자가문진 질문 (CARE_TYPE)
@@ -74,14 +74,14 @@ export enum CareType {
   QUESTION_5 = 5,   // 5. 최근 한 달간 우울하거나 슬픔?
   QUESTION_6 = 6,   // 6. 최근 한 달 동안 배뇨/배변 실수?
   QUESTION_7 = 7,   // 7. 청력/시력 문제 경험?
-  NONE = 0
+  NONE = -1
 }
 
 // 임금 지급 방식 (PAYMENT_TYPE)
 export enum PaymentType {
   DAILY = 38,      // 일급
   WEEKLY = 39,     // 주급
-  NONE = 0
+  NONE = -1
 }
 
 // 계약 상태 코드 (CONTRACT_STATE)
@@ -90,15 +90,24 @@ export enum ContractState {
   VALID = 41,      // 계약유효
   EXPIRE = 42,     // 계약만료
   NOT_ADMIT = 43,  // 계약불가
-  NONE = 0,
-  ALL = -1         // 전체 (명시적 처리)
+  NONE = -1,
+  ALL = 0         // 전체 (명시적 처리)
 }
 
 //권한 타입
-export enum ADMIN_TYPE {
+export enum AdminType {
   SYSTEM = 44,  // 44	시스템 관리자
   MASTER = 45,  // 45	마스터 관리자
   TOTAL = 46, // 46	총괄 관리자
   GENERAL = 47,  // 47	일반 관리자
-  NONE = 0  // 권한 없음
+  NONE = -1  // 권한 없음
+}
+
+// 근로 계약 타입 (일용, 용역)
+export enum ContractType {
+  DAILY = 48,      // 일용 근로계약
+  SERVICE = 49,    // 용역 근로계약
+  ETC = 96,        // 기타 근로자
+  ALL = 0,         // 전체 (명시적 정의)
+  NONE = -1        // 아무것도 검색안함
 }

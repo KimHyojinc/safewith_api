@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import { saveCompleteMemberInfo, queryEduExamContentsWithEduCode, queryEduExamInfoWithEduCode, queryAccountInfo, queryContractInfoWithTablet, queryBlockedInfo, queryHealthInfoBP, saveHealthInfoBP } from '../../shared/queries';
+import {  queryAccountInfo, queryContractInfoWithTablet, queryBlockedInfo, queryHealthInfoBP, saveHealthInfoBP } from '../../shared/queries';
 import moment from 'moment';
-import { models } from '../../data-source';
 import { ResultData } from '../../shared/result';
 import { tb_health_bpAttributes } from '../../models/init-models';
 
@@ -34,26 +33,24 @@ async function RegBp(req: Request, res: Response) {
     }
 
     // today's healthInfo 가져오기
-    const hinfoToday = await queryHealthInfoBP(site_code, account_code, now);
+    // const hinfoToday = await queryHealthInfoBP(site_code, account_code, now);
+    
+    const hinfo: tb_health_bpAttributes = {
+      code: -1,  // 타입 통과를 위한 임시 방편 -> 그래서 hinfo 통째로 INSERT 넣으면 안 됨
+      account_code,
+      site_code,
+      bp_max,
+      bp_min,
+      measure_dt: now.slice(0, 10),
+      reg_dt: new Date(now)
+    };
 
-    if (!hinfoToday) {
-      const hinfo: tb_health_bpAttributes = {
-        code: -1,  // 타입 통과를 위한 임시 방편 -> 그래서 hinfo 통째로 INSERT 넣으면 안 됨
-        account_code,
-        site_code,
-        bp_max,
-        bp_min,
-        measure_dt: now.slice(0, 10),
-        reg_dt: new Date(now)
-      };
-
-      const isSuccess = await saveHealthInfoBP(hinfo);
-      if (!isSuccess) {
-        return res.status(500).json(ResultData.error({ message: "혈압 데이터 기록에러", msg_code: -3 }));
-      }
+    const isSuccess = await saveHealthInfoBP(hinfo);
+    if (!isSuccess) {
+      return res.status(500).json(ResultData.error({ message: "혈압 데이터 기록에러", msg_code: -3 }));
     }
-
-    return res.status(200).json(ResultData.ok({
+    
+    return res.status(201).json(ResultData.ok({
       data: accInfo.name,
       name: accInfo.name,
       account_code: accInfo.code,
@@ -65,5 +62,3 @@ async function RegBp(req: Request, res: Response) {
 }
 
 export default RegBp;
-
-// [CONTINUE]: INSERT는 되는데 UPDATE 안 됨. 확인해볼 것
