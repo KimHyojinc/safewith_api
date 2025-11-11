@@ -10,6 +10,7 @@ import cookieParser from "cookie-parser";
 import { initDb } from "./data-source";
 import tabletAuthRouter from "./router/tabletAuthRouter";
 import tabletEduRouter from './router/tabletEduRouter';
+import tabletBpalRouter from './router/tabletBpalRouter';
 moment.tz.setDefault("Asia/Seoul");
 
 
@@ -42,8 +43,9 @@ app.use("/api/upload", express.static(path.join(__dirname, "../../uploads")));
 app.use("/api/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // API
-app.use("/api/tablet", tabletAuthRouter); // 웹 로그인 / 회원가입
-app.use("/api/tablet", tabletEduRouter);
+app.use("/api/tablet", tabletAuthRouter); // 로그인
+app.use("/api/tablet", tabletEduRouter); // 교육
+app.use("/api/tablet", tabletBpalRouter); // 혈압/음주 측정
 // app.use("/api/auth", authRouter);
 // app.use("/api/board", boardRouter);
 

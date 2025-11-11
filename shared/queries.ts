@@ -1,7 +1,8 @@
 import { Op, QueryTypes } from 'sequelize';
 import { models, sequelize } from '../data-source';
 import { SiteNameDto } from './site-name';
-import { EduSchInfo } from './edu';
+import moment from 'moment';
+import { tb_accountAttributes, tb_contractAttributes, tb_health_bpAttributes } from '../models/init-models';
 
 // tb_lib에서 group_name과 code를 기준으로 label 조회
 export async function queryLibLabel(groupName: string, code: number) {
@@ -13,7 +14,7 @@ export async function queryLibLabel(groupName: string, code: number) {
   
     return result?.view_text ?? null;
   } catch (error) {
-    throw new Error('queryLibLabel failed -- ' + error);
+    throw new Error('queryLibLabel error -- ' + error);
   }
 }
 
@@ -53,7 +54,7 @@ export async function querySites(client_code: number = -1) {
 
     return items;
   } catch (error) {
-    throw new Error('querySites failed -- ' + error);
+    throw new Error('querySites error -- ' + error);
   }
 }
 
@@ -118,7 +119,7 @@ export async function queryEduSch(
 
     return result;
   } catch (error) {
-    throw new Error('queryEduSch failed -- ' + error);
+    throw new Error('queryEduSch error -- ' + error);
   }
 }
 
@@ -148,7 +149,7 @@ export async function queryEduDetail(code: number) {
   
     return result;
   } catch (error) {
-    throw new Error('queryEduDetail failed -- ' + error);
+    throw new Error('queryEduDetail error -- ' + error);
   }
 }
 
@@ -163,7 +164,7 @@ export async function queryEduContentsWithCode(edu_contents_code: number) {
 
     return result;
   } catch (error) {
-    throw new Error('queryEduContentsWithCode failed -- ' + error);
+    throw new Error('queryEduContentsWithCode error -- ' + error);
   }
 }
 
@@ -199,6 +200,234 @@ export async function queryEduSchInfo(edu_sch_code: number) {
 
     return result;
   } catch (error) {
-    throw new Error('queryEduSchInfo failed -- ' + error);
+    throw new Error('queryEduSchInfo error -- ' + error);
+  }
+}
+
+// edu_code로 tb_edu_exam 정보 가져오는 쿼리
+export async function queryEduExamInfoWithEduCode(edu_code: number) {
+  try {
+    const result = await models.tb_edu_exam.findOne({
+      where: {
+        edu_code
+      }
+    });
+
+    return result;
+  } catch (error) {
+    throw new Error('queryEduExamInfoWithEduCode error -- ' + error);
+  }
+} 
+
+// edu_code로 edu exam contents 가져오는 쿼리
+export async function queryEduExamContentsWithEduCode(edu_code: number) {
+  try {
+    const result = await models.tb_edu_exam_contents.findAll({
+      include: [
+        {
+          model: models.tb_edu_exam,
+          as: 'edu_exam_code_tb_edu_exam', // EC -> EX
+          include: [
+            {
+              model: models.tb_edu,
+              as: 'edu_code_tb_edu', // EX -> E
+              required: true,
+            }
+          ],
+          required: true,
+        }
+      ],
+      where: {
+        '$edu_exam_code_tb_edu_exam.edu_code$': edu_code
+      },
+      order: [['question', 'ASC']]
+    });
+  
+    return result;
+  } catch (error) {
+    throw new Error('queryEduExamContentsWithEduCode error -- ' + error);
+  }
+}
+
+// 교육 완료
+// 존재하면 업데이트 완료정보까지 등록하는 쿼리
+export async function saveCompleteMemberInfo(eitem: {
+    edu_sch_code: number;
+    account_code: number;
+    is_complete: number;
+    complete_dt: string
+  }) {
+  try {
+    // ID 중복체크
+    const edu_member = await models.tb_edu_sch_member.findOne({
+      where: {
+        edu_sch_code: eitem.edu_sch_code,
+        account_code: eitem.account_code
+      }
+    });
+
+    if (!edu_member) {
+      // Create
+      const result = await models.tb_edu_sch_member.create(eitem as any);
+
+      return !!result;
+    } else {
+      // Update
+      edu_member.edu_sch_code = eitem.edu_sch_code;
+      edu_member.is_complete = eitem.is_complete;
+      edu_member.complete_dt = new Date(eitem.complete_dt);
+
+      await edu_member.save();
+      return true;
+    }
+  } catch (error) {
+    console.error('saveCompleteMemberInfo error -- ' + error);
+    // throw new Error('saveCompleteMemberInfo error -- ' + error);
+    return false;
+  }
+}
+
+// account_code로 계정 정보 가져오는 쿼리
+export async function queryAccountInfo(account_code: number) {
+  try {
+    const result = await sequelize.query<tb_accountAttributes>(
+      `
+      SELECT
+        A.*,
+        L.view_text AS bank_name
+      FROM tb_account A
+        LEFT JOIN tb_lib L ON A.bank_code = L.code
+      WHERE A.code = :code
+      `,
+      {
+        replacements: { code: account_code },
+        type: QueryTypes.SELECT,
+        raw: true,
+        plain: true
+      }
+    );
+
+    return result;
+  } catch (error) { 
+    throw new Error('queryAccountInfo error -- ' + error);
+  }
+}
+
+// 근로자 로그인시 계약정보 확인 키오스크/테블릿
+export async function queryContractInfoWithTablet(site_code: number, account_code: number) {
+  try {
+    type ContractInfoWithExtra = tb_contractAttributes & { sosok: string; };
+
+    const today = moment().format('YYYY-MM-DD');
+
+    const result = await sequelize.query<ContractInfoWithExtra>(
+      `
+      SELECT
+        A.name,
+        A.state_code,
+        A.allowed_code,
+        A.mobile,
+        C.*,
+        P.name AS sosok,
+        S.name AS site_name
+      FROM tb_contract C
+        LEFT JOIN tb_account A ON C.account_code = A.code
+        LEFT JOIN tb_partner P ON C.partner_code = P.code
+        LEFT JOIN tb_partner_contract PC ON P.code = PC.partner_code AND PC.site_code = C.site_code
+        LEFT JOIN tb_site S ON C.site_code = S.code
+      WHERE C.account_code = :account_code
+        AND C.site_code = :site_code
+        AND C.is_approval = :is_approval
+        AND (C.period_begin_dt <= :today AND :today <= C.period_end_dt)
+      ORDER BY A.name 
+      `,
+      {
+        replacements: {
+          account_code,
+          site_code,
+          is_approval: 1,
+          today
+        },
+        type: QueryTypes.SELECT,
+        raw: true,
+        plain: true
+      }
+    );
+
+    return result;
+  } catch (error) {
+    throw new Error('queryContractInfoWithTablet error -- ' + error);
+  }
+}
+
+// 차단된 근로자 정보 가져오는 쿼리
+export async function queryBlockedInfo(account_code: number) {
+  try {
+    const result = await models.tb_blocked.findOne({
+      where: {
+        account_code
+      }
+    });
+
+    return result;
+  } catch (error) {
+    throw new Error('queryBlockedInfo error -- ' + error);
+  }
+}
+
+// 오늘의 건강정보(혈압) 가져오는 쿼리 
+export async function queryHealthInfoBP(site_code: number, account_code: number, now: string) {
+  try {
+    const today = now.slice(0, 10);
+  
+    const result = await models.tb_health_bp.findOne({
+      where: {
+        account_code,
+        site_code,
+        measure_dt: today
+      }
+    });
+  
+    return result;
+  } catch (error) {
+    throw new Error('queryHealthInfoBP error -- ' + error);
+  }
+}
+
+// 건강정보등록(혈압) 쿼리
+export async function saveHealthInfoBP(item: tb_health_bpAttributes) {
+  try {
+    const healthBP = await models.tb_health_bp.findOne({
+      where: {
+        account_code: item.account_code,
+        site_code: item.site_code,
+        measure_dt: item.measure_dt
+      }
+    });
+
+    if (!healthBP) {
+      // INSERT
+      const result = await models.tb_health_bp.create({
+        site_code: item.site_code,
+        account_code: item.account_code,
+        bp_max: item.bp_max ?? null,
+        bp_min: item.bp_min ?? null,
+        measure_dt: item.measure_dt, // string or Date 타입 가능 (timestamp)
+        reg_dt: item.reg_dt    
+      } as any);
+
+      return !!result;
+    } else {
+      // UPDATE
+      healthBP.bp_max = item.bp_max;
+      healthBP.bp_min = item.bp_min;
+      healthBP.measure_dt = item.measure_dt;
+      healthBP.reg_dt = item.reg_dt;
+
+      await healthBP.save();
+      return true;
+    }
+  } catch (error) {
+    throw new Error('saveHealthInfoBP error -- ' + error);
   }
 }

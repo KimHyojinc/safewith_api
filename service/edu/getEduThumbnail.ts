@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { queryEduContentsWithCode } from '../../shared/queries';
 
+// @GET 교육 콘텐츠 썸네일
 async function GetEduThumbnail(req: Request, res: Response) {
   const { edu_contents_code } = req.params;
 

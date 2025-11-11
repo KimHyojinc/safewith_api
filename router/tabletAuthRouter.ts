@@ -2,11 +2,8 @@ import express from "express";
 import checkAuth from "../middleware/checkAuth";
 import multer from "multer";
 import path from "path";
-import Login from "../service/auth/login";
-import GetEXSiteList from "../service/auth/getEXSiteList";
+import { Login, LoginWorker, Logout, GetEXSiteList } from "../service/auth";
 import GetTestAuth from "../service/auth/getTestAuth";
-import Logout from '../service/auth/logout';
-import LoginWorker from '../service/auth/loginWorker';
 import { auth } from '../middleware/auth';
 
 const tabletAuthRouter = express.Router();

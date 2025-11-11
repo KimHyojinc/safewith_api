@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { models } from '../../data-source';
 import { convertBase64ToString, dev_mode, verifyPassword } from '../../middleware/util';
-import { generateToken } from '../../middleware/jwt';
+import { generateToken, verifyToken } from '../../middleware/jwt';
 import { setAuthCookie } from '../../middleware/auth';
 import { ResultData } from '../../shared/result';
 import { ADMIN_TYPE } from '../../shared/enums';
@@ -70,7 +70,17 @@ async function Login(req: Request, res: Response) {
             const clientInfo = clientInstance.get({ plain: true });
 
             // token, cookie
-            const payload = {};
+            // NOT_SURE: payload에 Admin_Type 정보 담기 
+            const auth_code =
+                accountInfo.auth_code === ADMIN_TYPE.SYSTEM ? ADMIN_TYPE.SYSTEM
+                    : accountInfo.auth_code === ADMIN_TYPE.MASTER ? ADMIN_TYPE.MASTER
+                        : accountInfo.auth_code === ADMIN_TYPE.TOTAL ? ADMIN_TYPE.TOTAL
+                            : accountInfo.auth_code === ADMIN_TYPE.GENERAL ? ADMIN_TYPE.GENERAL
+                                : ADMIN_TYPE.NONE;
+            const payload = {
+                account_code: accountInfo.code,
+                auth_code
+            };
 
             const token = generateToken(payload);
             setAuthCookie(res, token);

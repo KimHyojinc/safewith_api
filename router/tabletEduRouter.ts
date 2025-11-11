@@ -2,11 +2,17 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import { auth } from '../middleware/auth';
-import GetEduList from '../service/edu/getEduList';
-import GetEduDetail from '../service/edu/getEduDetail';
-import GetEduContentsDetail from '../service/edu/getEduContentsDetail';
-import GetEduThumbnail from '../service/edu/getEduThumbnail';
-import GetEduMovie from '../service/edu/getEduMovie';
+import {
+  GetEduList,
+  GetEduDetail,
+  GetEduContentsDetail,
+  GetEduThumbnail,
+  GetEduMovie,
+  GetEduExam,
+  CompleteExamMember,
+  CompleteEduMember
+} from '../service/edu';
+import { table } from 'console';
 
 const tabletEduRouter = express.Router();
 
@@ -22,9 +28,12 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 
-tabletEduRouter.post('/edulist', auth, GetEduList);
+tabletEduRouter.post("/edulist", auth, GetEduList);
 tabletEduRouter.post("/edudetail", auth, GetEduDetail);
 tabletEduRouter.post("/edu/contents", auth, GetEduContentsDetail);
+tabletEduRouter.post("/eduexam", GetEduExam);
+tabletEduRouter.post("/complete_exam", auth, CompleteExamMember);
+tabletEduRouter.post("/completeedu", auth, CompleteEduMember);
 tabletEduRouter.get("/edu/thumbnail/:edu_contents_code", GetEduThumbnail);
 tabletEduRouter.get("/edumovie/:edu_sch_code", GetEduMovie);
 

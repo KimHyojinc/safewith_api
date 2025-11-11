@@ -3,6 +3,7 @@ import moment from 'moment';
 import { EduListItem, EduSchInfo, PageListContext } from '../../shared/edu';
 import { queryLibLabel, queryEduSch } from '../../shared/queries';
 
+// @POST 교육 리스트
 async function GetEduList(req: Request, res: Response) {
   const { site_code, account_code, page_no = 1, page_size = 10 } = req.body;
 

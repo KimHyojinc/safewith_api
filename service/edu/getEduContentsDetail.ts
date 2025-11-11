@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { queryEduContentsWithCode } from '../../shared/queries';
 import { changeExtension } from '../../middleware/util';
 
+// @POST 교육 콘텐츠
 async function GetEduContentsDetail(req: Request, res: Response) {
   const { edu_contents_code } = req.body;
 
