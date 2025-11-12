@@ -9,7 +9,7 @@ async function RegAl(req: Request, res: Response) {
   const { site_code, account_code, alcohol } = req.body;
 
   try {
-    const now = moment().format("YYYY-MM-DD HH:mm:ss");
+    const today = moment().format("YYYY-MM-DD");
 
     const accInfo = await queryAccountInfo(account_code);
     if (!accInfo) {
@@ -29,8 +29,8 @@ async function RegAl(req: Request, res: Response) {
       account_code,
       site_code,
       measures: alcohol,
-      measure_dt: now.slice(0, 10),
-      reg_dt: new Date(now)
+      measure_dt: today,
+      reg_dt: moment().toDate()
     }
 
     const isSuccess = await saveHealthInfoAL(hinfo);

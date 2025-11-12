@@ -6,7 +6,7 @@ dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 // 2025-11-05 added: cookie
-const COOKIE_NAME = (process.env.COOKIE_NAME as string) || 'auth';
+const COOKIE_NAME = (process.env.COOKIE_NAME as string) || 'AUTH';
 const COOKIE_MAX_AGE = 1000 * 60 * 60 * 24 * 30;
 
 const cookieOpts = {

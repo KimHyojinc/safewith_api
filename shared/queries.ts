@@ -2,7 +2,7 @@ import { Op, QueryTypes } from 'sequelize';
 import { models, sequelize } from '../data-source';
 import { SiteNameDto } from './site-name';
 import moment from 'moment';
-import { tb_accountAttributes, tb_contractAttributes, tb_health_alcoholAttributes, tb_health_bpAttributes } from '../models/init-models';
+import { tb_accountAttributes, tb_contractAttributes, tb_edu_judge_contentsAttributes, tb_edu_judgeAttributes, tb_edu_sch_memberAttributes, tb_health_alcoholAttributes, tb_health_bpAttributes } from '../models/init-models';
 
 // tb_lib에서 group_name과 code를 기준으로 label 조회
 export async function queryLibLabel(groupName: string, code: number) {
@@ -251,12 +251,7 @@ export async function queryEduExamContentsWithEduCode(edu_code: number) {
 
 // 교육 완료
 // 존재하면 업데이트 완료정보까지 등록하는 쿼리
-export async function saveCompleteMemberInfo(eitem: {
-    edu_sch_code: number;
-    account_code: number;
-    is_complete: number;
-    complete_dt: string
-  }) {
+export async function saveCompleteMemberInfo(eitem: tb_edu_sch_memberAttributes) {
   try {
     // ID 중복체크
     const edu_member = await models.tb_edu_sch_member.findOne({
@@ -268,14 +263,14 @@ export async function saveCompleteMemberInfo(eitem: {
 
     if (!edu_member) {
       // Create
-      const result = await models.tb_edu_sch_member.create(eitem as any);
+      const result = await models.tb_edu_sch_member.create(eitem as tb_edu_sch_memberAttributes);
 
       return !!result;
     } else {
       // Update
       edu_member.edu_sch_code = eitem.edu_sch_code;
       edu_member.is_complete = eitem.is_complete;
-      edu_member.complete_dt = new Date(eitem.complete_dt);
+      edu_member.complete_dt = eitem.complete_dt;
 
       await edu_member.save();
       return true;
@@ -414,7 +409,7 @@ export async function saveHealthInfoBP(item: tb_health_bpAttributes) {
         bp_min: item.bp_min ?? null,
         measure_dt: item.measure_dt, // string or Date 타입 가능 (timestamp)
         reg_dt: item.reg_dt    
-      } as any);
+      } as tb_health_bpAttributes);
 
       return !!result;
     } else {
@@ -457,7 +452,7 @@ export async function saveHealthInfoAL(item: tb_health_alcoholAttributes) {
         measures: item.measures ?? 0,
         measure_dt: item.measure_dt, // string or Date 타입 가능 (timestamp)
         reg_dt: item.reg_dt    
-      } as any);
+      } as tb_health_alcoholAttributes);
 
       return !!result;
     } else {
@@ -514,20 +509,20 @@ export async function queryContractInfoWithSite(site_code: number, account_code:
     const result = await sequelize.query<ContractInfoWithExtra>(
       `
       SELECT 
-          A.name, A.state_code, A.allowed_code, A.mobile, 
-          C.*, 
-          P.name AS sosok, 
-          S.name AS site_name
-        FROM tb_contract C
-          LEFT JOIN tb_account A ON C.account_code = A.code
-          LEFT JOIN tb_partner P ON C.partner_code = P.code 
-          LEFT JOIN tb_partner_contract PC ON P.code = PC.partner_code AND PC.site_code = C.site_code
-          LEFT JOIN tb_site S ON C.site_code = S.code
-        WHERE 
-          C.account_code = :account_code 
-          AND C.site_code = :site_code
-        ORDER BY C.reg_dt DESC
-        LIMIT 1
+        A.name, A.state_code, A.allowed_code, A.mobile, 
+        C.*, 
+        P.name AS sosok, 
+        S.name AS site_name
+      FROM tb_contract C
+        LEFT JOIN tb_account A ON C.account_code = A.code
+        LEFT JOIN tb_partner P ON C.partner_code = P.code 
+        LEFT JOIN tb_partner_contract PC ON P.code = PC.partner_code AND PC.site_code = C.site_code
+        LEFT JOIN tb_site S ON C.site_code = S.code
+      WHERE 
+        C.account_code = :account_code 
+        AND C.site_code = :site_code
+      ORDER BY C.reg_dt DESC
+      LIMIT 1
       `,
       {
         replacements: { account_code, site_code },
@@ -540,5 +535,144 @@ export async function queryContractInfoWithSite(site_code: number, account_code:
     return result;
   } catch (error) {
     throw new Error('queryContractInfoWithSite error -- ' + error);
+  }
+}
+
+// EduJudge 정보를 등록하는 쿼리
+export async function addEduJudgeInfo(item: tb_edu_judgeAttributes) {
+  try {
+    const result = await models.tb_edu_judge.create({
+      edu_sch_code: item.edu_sch_code,
+      edu_exam_code: item.edu_exam_code,
+      account_code: item.account_code,
+      register_code: item.register_code,
+      reg_dt: item.reg_dt,
+      updater_code: item.updater_code,
+      update_dt: item.update_dt
+    } as tb_edu_judgeAttributes);
+
+    return result.code;
+  } catch (error) {
+    // throw new Error('addEduJudgeInfo error -- ' + error);
+    console.error('addEduJudgeInfo error -- ' + error);
+    return -1;
+  }
+}
+
+// 교육 평가지 컨텐츠 정보 추가
+export async function addEduJudgeContentsInfo(item: tb_edu_judge_contentsAttributes) {
+  try {
+    const result = await models.tb_edu_judge_contents.create({
+      edu_judge_code: item.edu_judge_code,
+      edu_exam_contents_code: item.edu_exam_contents_code,
+      answer: item.answer
+    } as tb_edu_judge_contentsAttributes);
+
+    return !!result;
+  } catch (error) {
+     // throw new Error('addEduJudgeContentsInfo error -- ' + error);
+    console.error('addEduJudgeContentsInfo error -- ' + error);
+    return false;
+  }
+}
+
+// 교육일정고유코드, 계정고유코드로 교육일정멤버 정보를 가져오는 쿼리
+export async function queryEduMember(edu_sch_code: number, account_code: number) {
+  try {
+    const result = await models.tb_edu_sch_member.findOne({
+      where: {
+        edu_sch_code,
+        account_code
+      }
+    });
+
+    return result;
+  } catch (error) {
+    throw new Error('queryEduMember error -- ' + error);
+  }
+}
+
+export async function updateEduSchMember(item: tb_edu_sch_memberAttributes) {
+  try {
+    const [updatedCount] = await models.tb_edu_sch_member.update(
+      {
+        complete_state: item.complete_state,
+        judge_state: item.judge_state,
+        is_complete: item.is_complete
+      },
+      {
+        where: {
+          code: item.code
+        }
+      }
+    );
+
+    if (updatedCount >= 1) {
+      return true;
+    }
+    
+    return false;
+  } catch (error) {
+    // throw new Error('updateEduSchMember error -- ' + error);
+    console.error('updateEduSchMember error -- ' + error);
+    return false;
+  }
+}
+
+// 계약서공유코드로 계약정보 가져오는 쿼리
+export async function queryContractInfo(contract_code: number) {
+  try {
+    const result = await sequelize.query<tb_contractAttributes>(
+      `
+      SELECT
+        A.name,   
+        A.state_code, 
+        A.allowed_code,  
+        A.MOBILE,   
+        C.*, 
+        P.name AS sosok,
+        S.name AS site_name,
+        CC.code AS client_code,
+        CC.name AS client_name,
+        B.state AS blocked_state,
+        B.contents AS blocked_contents,
+        L.view_text AS bank_name
+      FROM tb_contract C
+        LEFT JOIN tb_account A ON C.account_code = A.code
+        LEFT JOIN tb_partner P ON C.partner_code = P.code 
+        LEFT JOIN tb_partner_contract PC ON P.code = PC.partner_code AND PC.site_code = C.site_code
+        LEFT JOIN tb_site S ON C.site_code = S.code
+        LEFT JOIN tb_blocked B ON C.account_code = B.account_code AND C.partner_code = B.partner_code AND C.site_code = B.site_code
+        LEFT JOIN tb_site_of_client SC ON SC.site_code = C.site_code
+        LEFT JOIN tb_client CC ON CC.code = SC.client_code
+        LEFT JOIN tb_lib L ON L.code = C.bank_code
+      WHERE C.code = :code
+      `,
+      {
+        replacements: { code: contract_code },
+        type: QueryTypes.SELECT,
+        raw: true,
+        plain: true
+      }
+    );
+
+    return result;
+  } catch (error) {
+    throw new Error('queryContractInfo error -- ' + error);
+  }
+}
+
+// 필수 문서 리스트 조회 쿼리
+export async function queryReqDocList(account_code: number) {
+  try {
+    const result = await models.tb_req_doc.findAll({
+      where: {
+        account_code
+      }
+    });
+
+    return result;
+  } catch (error) {
+    throw new Error('queryReqDocList error -- ' + error);
   }
 }

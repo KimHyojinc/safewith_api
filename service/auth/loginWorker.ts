@@ -4,9 +4,7 @@ import { convertBase64ToString, dev_mode, verifyPassword } from '../../middlewar
 import { ResultData } from '../../shared/result';
 
 async function LoginWorker(req: Request, res: Response) {
-  const { id, pw, site_code: siteCodeAsStr } = req.body;
-    
-  const site_code = Number(siteCodeAsStr);
+  const { id, pw, site_code } = req.body;
 
   try {
     const accountInstance = await models.tb_account.findOne({

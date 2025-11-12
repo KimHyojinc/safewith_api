@@ -2,16 +2,18 @@ import { Request, Response } from "express";
 import { saveCompleteMemberInfo } from '../../shared/queries';
 import moment from 'moment';
 
-// @POST 교육 시험 완료
+// @POST /api/tablet/completeedu
+// 교육 시험 완료
 async function CompleteEduMember(req: Request, res: Response) {
-  const { edu_code, edu_sch_code, account_code } = req.body;
+  const { edu_sch_code, account_code } = req.body;
 
   try {
     const eitem = {
+      code: -1, // 타입 체크 통과를 위한 코드. 따로 의미는 없음
       edu_sch_code,
       account_code,
       is_complete: 1,
-      complete_dt: moment().format("YYYY-MM-DD HH:mm:ss") 
+      complete_dt: moment().toDate() 
     }
 
     const isSuccess = await saveCompleteMemberInfo(eitem);

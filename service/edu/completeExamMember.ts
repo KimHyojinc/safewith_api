@@ -1,26 +1,77 @@
 import { Request, Response } from "express";
-import { queryEduExamContentsWithEduCode, queryEduExamInfoWithEduCode } from '../../shared/queries';
+import moment from 'moment';
 import dotenv from 'dotenv';
 import { verifyToken } from '../../middleware/jwt';
+import { addEduJudgeContentsInfo, addEduJudgeInfo, queryEduMember, updateEduSchMember } from '../../shared/queries';
 dotenv.config();
 
-const COOKIE_NAME = process.env.COOKIE_NAME ?? 'auth';
+const COOKIE_NAME = process.env.COOKIE_NAME ?? 'AUTH';
 
-// [미완] @POST 교육 시험 완료
+// @POST /api/tablet/complete_exam 
+// 교육 시험 완료
 async function CompleteExamMember(req: Request, res: Response) {
-  const { edu_code, edu_sch_code, edu_exam_code, account_code, judge_state } = req.body;
+  const { edu_code, edu_sch_code, edu_exam_code, account_code, judge_state, edu_exam_judge } = req.body;
 
   try {
     const token = req.cookies?.[COOKIE_NAME];
 
-    const reg_code = verifyToken(token)['account_code']; // 등록관리자
+    const registerCode = verifyToken(token)['account_code']; // 등록관리자
 
-    // [CONTINUE]: .NET 코드에 body로부터 "edu_exam_judge" 받아오는데, 이게 뭔지.. 
+    const jitem = {
+      code: -1, // 타입 체크 통과를 위한 코드. 따로 의미는 없음
+      edu_sch_code,
+      edu_exam_code,
+      account_code,
+      register_code: registerCode,
+      reg_dt: moment().toDate(),
+      updater_code: registerCode,
+      update_dt: moment().toDate(),
+    };
+
+    const eduJudgeCode = await addEduJudgeInfo(jitem);
+
+    if (eduJudgeCode <= 0) {
+      return res.status(500).json({ result: "NG", message: "시험 이수정보 등록 실패!" });
+    }
+
+    edu_exam_judge.forEach(async (item: {
+      edu_exam_contents_code: number;
+      edu_exam_code: number;
+      answer: number
+    }) => {
+      const ejcItem = {
+        code: -1, // 타입 체크 통과를 위한 코드. 따로 의미는 없음
+        edu_judge_code: eduJudgeCode,
+        edu_exam_contents_code: item.edu_exam_contents_code,
+        answer: item.answer
+      };
+
+      const isSuccess = await addEduJudgeContentsInfo(ejcItem);
+      if (!isSuccess) {
+        return res.status(500).json({ result: "NG", message: "시험 이수 컨텐츠 등록 실패!" }); 
+      }
+    })
+
+    const eitem = await queryEduMember(edu_sch_code, account_code);
+    if (!eitem) {
+      return res.status(404).json({ result: "NG", message: "시험 이수 정보가 없습니다" }); 
+    }
+
+    console.log(`eitem code -- ${eitem.code}`)
+
+    eitem.judge_state = judge_state;
+
+    eitem.complete_dt = moment().toDate();
+    const isSuccess = await updateEduSchMember(eitem);
+
+    if (!isSuccess) {
+      return res.status(500).json({ result: "NG", message: "시험 이수 정보 업데이트 실패 !!", judge_state: 0 });
+    }
 
     return res.status(200).json({ 
       result: "OK",
-      message: "정상처리",
-      reg_code
+      message: "시험 이수 완료",
+      judge_state: judge_state
     });
   } catch (error) {
     return res.status(500).json({ result: false, msg: error });

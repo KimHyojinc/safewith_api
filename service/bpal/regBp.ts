@@ -9,7 +9,7 @@ async function RegBp(req: Request, res: Response) {
   const { site_code, account_code, bp_max, bp_min } = req.body;
 
   try {
-    const now = moment().format("YYYY-MM-DD HH:mm:ss");
+    const today = moment().format("YYYY-MM-DD");
 
     const accInfo = await queryAccountInfo(account_code);
     if (!accInfo) {
@@ -41,8 +41,8 @@ async function RegBp(req: Request, res: Response) {
       site_code,
       bp_max,
       bp_min,
-      measure_dt: now.slice(0, 10),
-      reg_dt: new Date(now)
+      measure_dt: today,
+      reg_dt: moment().toDate()
     };
 
     const isSuccess = await saveHealthInfoBP(hinfo);
