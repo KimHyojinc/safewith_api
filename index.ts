@@ -14,6 +14,7 @@ import tabletBpalRouter from './router/tabletBpalRouter';
 import tabletDutyRouter from './router/tabletDutyRouter';
 import tabletTestRouter from './router/tabletTestRouter';
 import tabletContractRouter from './router/tabletContractRouter';
+import tabletWorkerRouter from './router/tabletWorkerRouter';
 moment.tz.setDefault("Asia/Seoul");
 
 
@@ -52,6 +53,7 @@ app.use("/api/tablet", tabletEduRouter); // 교육
 app.use("/api/tablet", tabletBpalRouter); // 혈압/음주 측정
 app.use("/api/tablet", tabletDutyRouter); // 출역체크
 app.use("/api/tablet", tabletContractRouter); // 계약
+app.use("/api/tablet", tabletWorkerRouter); // 근로자
 
 
 app.get("/", (req, res) => res.status(200).send("pong"));

@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
+import dayjs from 'dayjs';
 import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobile } from '../../shared/queries';
 import { ResultData } from '../../shared/result';
+import { decrypt } from '../../middleware/util';
 
 // @POST /api/tablet/qrtag 
 // 출역 QR코드
@@ -8,13 +10,35 @@ async function QrTag(req: Request, res: Response) {
   const { qr, site_code } = req.body;
 
   try {
-    /*
-    * 원본 .NET 코드에는 암호화된 QR 체크 로직이 있으나, 주석처리된 부분으로 인해 다 스킵이 되는 로직임
-    * 따라서, 본 Node 코드에 옮기지 않음
-    */
-
     // 근로자만 가능 
-    const mobile = qr.replaceAll('-', '');
+    const tag = qr.replaceAll('-', '');
+
+    let mobile = tag;
+
+    try {
+      if (tag.length >= 14 + 11) {
+        const key = 'SafetyPlatform!@#$%^&*()';
+
+        const dec_data = decrypt(tag, key);
+        const dec_datas = dec_data.split(new RegExp('#'));
+
+        if (dec_datas != null && dec_datas.length >= 2) {
+          // 모바일 번호, 날짜 분리됨
+          console.log(`Mobile: ${dec_datas[1]}, Date: ${dec_datas[0]}, site_code:${site_code}`);
+        }
+
+        const time = dayjs(dec_datas[0], 'YYYYMMDDHHmmss');
+        const sp = dayjs().diff(time, 'second');
+
+        if (Math.abs(sp) > 300) {
+          return res.status(400).json(ResultData.error({ message: 'QR테그 유효기간 확인', msg_code: -5 }));
+        }
+
+        mobile = dec_datas[1]; // 핸드폰 번호
+      }
+    } catch (error) {
+      return res.json({ result: 'error', message: '서버 에러 발생', code: -1 });
+    }
 
     const accInfo = await queryAccountInfoWithMobile(mobile);
 

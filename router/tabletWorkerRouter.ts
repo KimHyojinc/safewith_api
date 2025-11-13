@@ -2,15 +2,9 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import { auth } from '../middleware/auth';
-import {
-  QrLogin,
-  QrTag,
-  QrAccountLogin,
-  GetContractDetail,
-  //QrCommute
-} from '../service/duty';
+import GetWorkerDetail from '../service/worker/getWorkerDetail';
 
-const tabletDutyRouter = express.Router();
+const tabletWorkerRouter = express.Router();
 
 // Multer 설정: 업로드된 파일을 'uploads/' 디렉토리에 저장
 const storage = multer.diskStorage({
@@ -23,10 +17,7 @@ const storage = multer.diskStorage({
   });
 const upload = multer({ storage: storage });
 
-tabletDutyRouter.post('/qrlogin', QrLogin);
-tabletDutyRouter.post('/qrtag', QrTag);
-tabletDutyRouter.post('/qraccount', QrAccountLogin);
-tabletDutyRouter.post('/contract/detail', auth, GetContractDetail);
-// tabletDutyRouter.post('/qrcommute', QrCommute);
+tabletWorkerRouter.post('/worker/detail', GetWorkerDetail);
 
-export default tabletDutyRouter;
+
+export default tabletWorkerRouter;

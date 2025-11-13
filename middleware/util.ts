@@ -160,3 +160,15 @@ export async function downloadFileAsync(url: string): Promise<Buffer> {
 
   return Buffer.from(response.data);
 }
+
+// AES-192-CBC 복호화 함수
+export function decrypt(cipherText: string, key: string): string {
+  const keyBuffer = Buffer.from(key, 'utf8'); // 24-byte key → AES-192
+  const iv = Buffer.alloc(16, 0); // Zero IV
+
+  // @ts-ignore
+  const decipher = crypto.createDecipheriv('aes-192-cbc', keyBuffer, iv);
+  let decrypted = decipher.update(cipherText, 'base64', 'utf8');
+  decrypted += decipher.final('utf8');
+  return decrypted;
+}

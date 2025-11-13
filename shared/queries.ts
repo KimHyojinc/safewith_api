@@ -2,7 +2,8 @@ import { Op, QueryTypes } from 'sequelize';
 import { models, sequelize } from '../data-source';
 import { SiteNameDto } from './site-name';
 import moment from 'moment';
-import { tb_accountAttributes, tb_contractAttributes, tb_edu_judge_contentsAttributes, tb_edu_judgeAttributes, tb_edu_sch_memberAttributes, tb_health_alcoholAttributes, tb_health_bpAttributes } from '../models/init-models';
+import { tb_accountAttributes, tb_commuteAttributes, tb_contractAttributes, tb_edu_judge_contentsAttributes, tb_edu_judgeAttributes, tb_edu_sch_memberAttributes, tb_health_alcoholAttributes, tb_health_bpAttributes } from '../models/init-models';
+import { CommuteState } from './enums';
 
 // tb_lib에서 group_name과 code를 기준으로 label 조회
 export async function queryLibLabel(groupName: string, code: number) {
@@ -674,5 +675,245 @@ export async function queryReqDocList(account_code: number) {
     return result;
   } catch (error) {
     throw new Error('queryReqDocList error -- ' + error);
+  }
+}
+
+// 통근정보히스토리 가져오는 쿼리
+export async function queryCommuteInfoHistory(site_code: number, account_code: number | undefined, cstate: CommuteState, date: string) {
+  try {
+    const result = await models.tb_commute.findOne({
+      where: {
+        site_code,
+        account_code,
+        state_code: cstate,
+        in_dt: date
+      }
+    });
+
+    return result;
+  } catch (error) {
+    throw new Error('queryCommuteInfoHistory error -- ' + error);
+  }
+}
+
+// 통근정보 업데이트
+export async function updateCommuteInfo(commuteInfo: tb_commuteAttributes) {
+  try {
+    const [updatedCount] = await models.tb_commute.update(
+      {
+        in_dt: commuteInfo.in_dt,
+        out_dt: commuteInfo.out_dt,
+        state_code: commuteInfo.state_code,
+        update_dt: commuteInfo.update_dt,
+        reason_code: commuteInfo.reason_code,
+        reason_cause: commuteInfo.reason_cause
+      },
+      {
+        where: {
+          code: commuteInfo.code
+        }
+      }
+    );
+
+    if (updatedCount >= 1) {
+      return true;
+    }
+    
+    return false;
+  } catch (error) {
+    // throw new Error('updateCommuteInfo error -- ' + error);
+    console.error('updateCommuteInfo error -- ' + error);
+    return false;
+  }
+}
+
+// site config 가져오는 쿼리
+export async function querySiteConfig(site_code: number) {
+  try {
+    const result = await models.tb_site_config.findOne({
+      where: {
+        site_code
+      }
+    });
+
+    return result;
+  } catch (error) {
+    throw new Error('querySiteConfig error -- ' + error);
+  }
+}
+
+//
+export async function queryHealthListBpTop(site_code: number, account_code: number) {
+  try {
+    const result = await models.tb_health_bp.findAll({
+      where: {
+        site_code,
+        account_code
+      },
+      order: [['measure_dt', 'DESC']],
+      limit: 10
+    });
+
+    return result;
+  } catch (error) {
+    // throw new Error('queryHealthListBPTOP error -- ' + error);
+    return null;
+  }
+}
+
+//
+export async function queryHealthListBpByDate(site_code: number, account_code: number, start_time_bp: Date) {
+  try {
+    const result = await models.tb_health_bp.findAll({
+      where: {
+        site_code,
+        account_code,
+        measure_dt: {
+          [Op.gte]: moment(start_time_bp).format("YYYY-MM-DD")
+        }
+      },
+    });
+
+    return result;
+  } catch (error) {
+    // throw new Error('queryHealthListBpByDate error -- ' + error);
+    return null;
+  }
+} 
+
+//
+export async function queryHealthListAlTop(site_code: number, account_code: number) {
+  try {
+    const result = await models.tb_health_alcohol.findAll({
+      where: {
+        site_code,
+        account_code
+      },
+      order: [['measure_dt', 'DESC']],
+      limit: 10
+    });
+
+    return result;
+  } catch (error) {
+    // throw new Error('queryHealthListBPTOP error -- ' + error);
+    return null;
+  }
+}
+
+//
+export async function queryHealthListAlByDate(site_code: number, account_code: number, start_time_al: Date) {
+  try {
+    const result = await models.tb_health_alcohol.findAll({
+      where: {
+        site_code,
+        account_code,
+        measure_dt: {
+          [Op.gte]: moment(start_time_al).format("YYYY-MM-DD")
+        }
+      },
+    });
+
+    return result;
+  } catch (error) {
+    // throw new Error('queryHealthListBpByDate error -- ' + error);
+    return null;
+  }
+} 
+
+//
+export async function queryEduMemberWithSite(site_code: number, account_code: number) {
+  try {
+    const result = await sequelize.query<tb_edu_sch_memberAttributes>(
+      `
+      SELECT *
+      FROM tb_edu_sch_member EM
+        LEFT JOIN tb_edu_sch ES ON EM.edu_sch_code = ES.code
+        LEFT JOIN tb_edu E ON ES.edu_code = E.code
+        LEFT JOIN tb_account A ON EM.account_code = A.code 
+      WHERE ES.site_code = :site_code
+        AND EM.account_code = :account_code
+      `,
+      {
+        replacements: { 
+          site_code,
+          account_code
+        },
+        type: QueryTypes.SELECT,
+        raw: true,
+      }
+    );
+
+    return result;
+  } catch (error) {
+    // throw new Error('queryEduMemberWithSite error -- ' + error);
+    return null;
+  }
+}
+
+// 
+export async function saveCommuteInfo(item: tb_commuteAttributes) {
+  try {
+    const commuteRows = await sequelize.query<tb_commuteAttributes>(
+      `
+      SELECT *
+      FROM tb_commute
+      WHERE site_code = :site_code
+        AND account_code = :account_code
+        AND TO_CHAR(in_dt, 'YYYY-MM-DD') = :in_dt
+      `,
+      {
+        replacements: {
+          site_code: item.site_code,
+          account_code: item.account_code,
+          in_dt: moment(item.in_dt).format("YYYY-MM-DD")
+        },
+        type: QueryTypes.SELECT
+      }
+    );
+
+    let commuteCode = -1;
+    if (commuteRows.length > 0) {
+      commuteCode = commuteRows[0].code;
+    }
+
+    if (commuteCode === -1) {
+      const result = await models.tb_commute.create({
+        site_code: item.site_code,
+        account_code: item.account_code,
+        state_code: item.state_code,
+        in_dt: item.in_dt,
+        reg_dt: item.reg_dt,
+        update_dt: item.update_dt,
+        reason_code: item.reason_code,
+        reason_cause: item.reason_cause
+      } as tb_commuteAttributes);
+
+      return !!result;
+    } else {
+      const [updatedCount] = await models.tb_commute.update(
+        {
+          in_dt: item.in_dt,
+          state_code: item.state_code,
+          update_dt: item.update_dt,
+          reason_code: item.reason_code,
+          reason_cause: item.reason_cause
+        },
+        {
+          where: {
+            code: commuteCode
+          }
+        }
+      );
+
+      if (updatedCount >= 1) {
+        return true;
+      }
+      
+      return false;
+    }
+  } catch (error) {
+    // throw new Error('updateCommuteInfo error -- ' + error);
+    console.error('addCommuteInfo error -- ' + error);
+    return false;
   }
 }
