@@ -7,7 +7,7 @@ dotenv.config();
 
 const COOKIE_NAME = process.env.COOKIE_NAME ?? 'AUTH';
 
-// @POST /api/tablet/complete_exam 
+// @POST /api/complete_exam 
 // 교육 시험 완료
 async function CompleteExamMember(req: Request, res: Response) {
   const { edu_code, edu_sch_code, edu_exam_code, account_code, judge_state, edu_exam_judge } = req.body;

@@ -9,7 +9,7 @@ dotenv.config();
 
 // const COOKIE_NAME = process.env.COOKIE_NAME ?? 'AUTH';
 
-// @POST /api/tablet/contract/detail
+// @POST /api/contract/detail
 // 계약정보 조회
 async function GetContractDetail(req: Request, res: Response) {
   const { contract_code } = req.body;

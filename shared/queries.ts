@@ -1,9 +1,9 @@
-import { Op, QueryTypes } from 'sequelize';
+import { Op, QueryTypes, Sequelize } from 'sequelize';
 import { models, sequelize } from '../data-source';
 import { SiteNameDto } from './site-name';
 import moment from 'moment';
-import { tb_accountAttributes, tb_commuteAttributes, tb_contractAttributes, tb_edu_judge_contentsAttributes, tb_edu_judgeAttributes, tb_edu_sch_memberAttributes, tb_health_alcoholAttributes, tb_health_bpAttributes } from '../models/init-models';
-import { CommuteState } from './enums';
+import { tb_accountAttributes, tb_commuteAttributes, tb_contractAttributes, tb_edu_judge_contentsAttributes, tb_edu_judgeAttributes, tb_edu_sch_memberAttributes, tb_health_alcoholAttributes, tb_health_bpAttributes, tb_tbm_stateAttributes, tb_tbmAttributes } from '../models/init-models';
+import { CommuteState, ContractState, ContractType } from './enums';
 
 // tb_lib에서 group_name과 code를 기준으로 label 조회
 export async function queryLibLabel(groupName: string, code: number) {
@@ -264,7 +264,7 @@ export async function saveCompleteMemberInfo(eitem: tb_edu_sch_memberAttributes)
 
     if (!edu_member) {
       // Create
-      const result = await models.tb_edu_sch_member.create(eitem as tb_edu_sch_memberAttributes);
+      const result = await models.tb_edu_sch_member.create(eitem);
 
       return !!result;
     } else {
@@ -679,20 +679,34 @@ export async function queryReqDocList(account_code: number) {
 }
 
 // 통근정보히스토리 가져오는 쿼리
-export async function queryCommuteInfoHistory(site_code: number, account_code: number | undefined, cstate: CommuteState, date: string) {
+export async function queryCommuteInfoHistory(site_code: number, account_code: number | undefined, cstate: CommuteState, dateStr: string) {
   try {
-    const result = await models.tb_commute.findOne({
-      where: {
-        site_code,
-        account_code,
-        state_code: cstate,
-        in_dt: date
+    const result = await sequelize.query<tb_commuteAttributes>(
+      `
+      SELECT * FROM tb_commute
+      WHERE 
+        site_code = :site_code AND
+        account_code = :account_code AND
+        state_code = :state_code AND
+        TO_CHAR(in_dt, 'YYYY-MM-DD') = :in_dt
+      LIMIT 1
+      `,
+      {
+        replacements: {
+          site_code,
+          account_code,
+          state_code: cstate,
+          in_dt: dateStr
+        },
+        type: QueryTypes.SELECT,
+        plain: true
       }
-    });
+    );
 
     return result;
   } catch (error) {
-    throw new Error('queryCommuteInfoHistory error -- ' + error);
+    console.error("queryCommuteInfoHistory error -- " + error);
+    return null;
   }
 }
 
@@ -915,5 +929,108 @@ export async function saveCommuteInfo(item: tb_commuteAttributes) {
     // throw new Error('updateCommuteInfo error -- ' + error);
     console.error('addCommuteInfo error -- ' + error);
     return false;
+  }
+}
+
+// TBMList Query
+export async function queryTBMList(site_code: number, search_type: string,
+  sdt: string, edt: string, search_text: string, search_proc_state: number) {
+    
+  try { 
+    let qry =
+      `
+      SELECT 
+        T.*, 
+        A.name AS reg_name
+      FROM tb_tbm T
+        LEFT JOIN tb_account A ON T.register_code = A.code
+        LEFT JOIN tb_lib L ON T.const_type = L.code
+      WHERE T.site_code = :site_code 
+      `;
+    
+    const replacements: any = {
+      site_code
+    };
+
+    //전체검색이 아닐경우 
+    if (sdt !== "" && edt !== "") {
+      qry += `
+        AND (:sdt <= TO_CHAR(T.reg_dt, 'YYYY-MM-DD')
+        AND :edt >= TO_CHAR(T.reg_dt, 'YYYY-MM-DD'))
+      `;
+      replacements.sdt = sdt;
+      replacements.edt = edt;
+    }
+
+    // 결재상태 필터 
+    if (search_proc_state === 1 || search_proc_state === 2) {
+      qry += ` AND T.is_sign = :is_sign `;
+      replacements.is_sign = search_proc_state === 1 ? 1 : 0; // 1: 결재완료, 0: 결재미완료
+    }
+
+    // 텍스트 검색
+    if (search_text && search_text.trim() !== "") {
+      qry += `
+        AND (
+          T.subject ILIKE :search_pattern OR 
+          A.name ILIKE :search_pattern OR 
+          L.view_text ILIKE :search_pattern
+        )
+      `;
+      replacements.search_pattern = `%${search_text}%`;
+    }
+
+    qry += ` ORDER BY T.reg_dt DESC`;
+
+    const tbmRows = await sequelize.query<tb_tbmAttributes>(qry, {
+      type: QueryTypes.SELECT,
+      replacements
+    });
+
+    return tbmRows;
+  } catch (error) {
+    console.error('queryTBMList error -- ' + error);
+    return null;
+  }
+}
+
+//
+export async function queryTBMState(tbm_code: number, worker_code: number) {
+  try {
+    const result = await models.tb_tbm_state.findOne({
+      where: {
+        tbm_code,
+        worker_code
+      }
+    });
+
+    return result;
+  } catch (error) {
+    console.error('queryTBMState error -- ' + error);
+    return null;
+  }
+}
+
+// addTBMState
+export async function addTBMState(item: tb_tbm_stateAttributes) {
+  try {
+    const result = await models.tb_tbm_state.create(item);
+
+    return !!result;
+  } catch (error) {
+    console.error('addTBMState error -- ' + error);
+    return false;
+  }
+}
+
+// @ original : DataManager.QueryContracts
+export async function queryContracts(site_code: number, cstate: ContractState,
+  ctype: ContractType, sdt: string, edt: string, search_text: string) {
+
+  try {
+
+  } catch (error) {
+    console.error('queryContracts error -- ' + error);
+    return null;
   }
 }

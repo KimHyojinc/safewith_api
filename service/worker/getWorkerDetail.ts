@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobile, querySiteInfo, queryAccountInfo, queryContractInfo } from '../../shared/queries';
 import { ResultData } from '../../shared/result';
 
-// @POST /api/tablet/worker/detail
+// @POST /api/worker/detail
 // 근로자 상세정보
 async function GetWorkerDetail(req: Request, res: Response) {
   const { site_code, worker_code, contract_code } = req.body;

@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import { auth } from '../middleware/auth';
 import GetWorkerDetail from '../service/worker/getWorkerDetail';
+//import GetWorkerList from '../service/worker/getWorkerList';
 
 const tabletWorkerRouter = express.Router();
 
@@ -18,6 +19,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 tabletWorkerRouter.post('/worker/detail', GetWorkerDetail);
+// tabletWorkerRouter.post('/workerlist', GetWorkerList);
 
 
 export default tabletWorkerRouter;

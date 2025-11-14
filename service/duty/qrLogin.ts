@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobile, querySiteInfo } from '../../shared/queries';
 import { ResultData } from '../../shared/result';
 
-// @POST /api/tablet/qrlogin
+// @POST /api/qrlogin
 // QR 로그인
 async function QrLogin(req: Request, res: Response) {
   const { qr, site_code } = req.body;

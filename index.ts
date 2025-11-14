@@ -47,13 +47,13 @@ app.use("/api/upload", express.static(path.join(__dirname, "../../uploads")));
 app.use("/api/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // API
-app.use("/api/tablet", tabletTestRouter); // 테스트
-app.use("/api/tablet", tabletAuthRouter); // 로그인
-app.use("/api/tablet", tabletEduRouter); // 교육
-app.use("/api/tablet", tabletBpalRouter); // 혈압/음주 측정
-app.use("/api/tablet", tabletDutyRouter); // 출역체크
-app.use("/api/tablet", tabletContractRouter); // 계약
-app.use("/api/tablet", tabletWorkerRouter); // 근로자
+app.use("/api", tabletTestRouter); // 테스트
+app.use("/api", tabletAuthRouter); // 로그인
+app.use("/api", tabletEduRouter); // 교육
+app.use("/api", tabletBpalRouter); // 혈압/음주 측정
+app.use("/api", tabletDutyRouter); // 출역체크
+app.use("/api", tabletContractRouter); // 계약
+app.use("/api", tabletWorkerRouter); // 근로자
 
 
 app.get("/", (req, res) => res.status(200).send("pong"));

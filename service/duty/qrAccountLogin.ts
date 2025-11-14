@@ -4,7 +4,7 @@ import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobi
 import { ResultData } from '../../shared/result';
 import { ContractType } from '../../shared/enums';
 
-// @POST /api/tablet/qraccount
+// @POST /api/qraccount
 // QR 계약 체크
 async function QrAccountLogin(req: Request, res: Response) {
   const { qr, site_code, contract_type } = req.body;

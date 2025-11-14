@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { saveCompleteMemberInfo } from '../../shared/queries';
 import moment from 'moment';
 
-// @POST /api/tablet/completeedu
+// @POST /api/completeedu
 // 교육 시험 완료
 async function CompleteEduMember(req: Request, res: Response) {
   const { edu_sch_code, account_code } = req.body;
