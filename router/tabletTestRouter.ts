@@ -2,6 +2,8 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import Init from '../service/init';
+import GetHealthPressureList from '../service/temp/getHealthPressureList';
+import SendSMS from '../service/sms/sendSMS';
 
 const tabletTestRouter = express.Router();
 
@@ -17,5 +19,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 tabletTestRouter.post('/init', Init);
+tabletTestRouter.post('/healthlist', GetHealthPressureList); // 임시방편. Route 결정되면 옮길 것 
+tabletTestRouter.post('/sendsms', SendSMS); // 임시방편. Router 결정되면 옮길 것 
 
 export default tabletTestRouter;

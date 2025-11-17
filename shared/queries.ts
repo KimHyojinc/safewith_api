@@ -2,8 +2,16 @@ import { Op, QueryTypes, Sequelize } from 'sequelize';
 import { models, sequelize } from '../data-source';
 import { SiteNameDto } from './site-name';
 import moment from 'moment';
-import { tb_accountAttributes, tb_commuteAttributes, tb_contractAttributes, tb_edu_judge_contentsAttributes, tb_edu_judgeAttributes, tb_edu_sch_memberAttributes, tb_health_alcoholAttributes, tb_health_bpAttributes, tb_tbm_stateAttributes, tb_tbmAttributes } from '../models/init-models';
+import { tb_accountAttributes, tb_commuteAttributes, tb_contractAttributes, tb_edu_judge_contentsAttributes, tb_edu_judgeAttributes, tb_edu_sch_memberAttributes, tb_health_alcoholAttributes, tb_health_bpAttributes, tb_health_oxygenAttributes, tb_health_stressAttributes, tb_partnerAttributes, tb_site_config, tb_site_configAttributes, tb_tbm_stateAttributes, tb_tbmAttributes } from '../models/init-models';
 import { CommuteState, ContractState, ContractType } from './enums';
+import dayjs from 'dayjs';
+
+/*
+** 
+** queries
+**
+*/
+
 
 // tb_lib에서 group_name과 code를 기준으로 label 조회
 export async function queryLibLabel(groupName: string, code: number) {
@@ -15,7 +23,8 @@ export async function queryLibLabel(groupName: string, code: number) {
   
     return result?.view_text ?? null;
   } catch (error) {
-    throw new Error('queryLibLabel error -- ' + error);
+    console.error('queryLibLabel error -- ' + error);
+    return null;
   }
 }
 
@@ -55,7 +64,8 @@ export async function querySites(client_code: number = -1) {
 
     return items;
   } catch (error) {
-    throw new Error('querySites error -- ' + error);
+    console.error('querySites error -- ' + error);
+    return null;
   }
 }
 
@@ -121,6 +131,8 @@ export async function queryEduSch(
     return result;
   } catch (error) {
     throw new Error('queryEduSch error -- ' + error);
+    // console.error('queryEduSch error -- ' + error);
+    // return null;
   }
 }
 
@@ -150,7 +162,8 @@ export async function queryEduDetail(code: number) {
   
     return result;
   } catch (error) {
-    throw new Error('queryEduDetail error -- ' + error);
+    console.error('queryEduDetail error -- ' + error);
+    return null;
   }
 }
 
@@ -165,7 +178,8 @@ export async function queryEduContentsWithCode(edu_contents_code: number) {
 
     return result;
   } catch (error) {
-    throw new Error('queryEduContentsWithCode error -- ' + error);
+    console.error('queryEduContentsWithCode error -- ' + error);
+    return null;
   }
 }
 
@@ -201,7 +215,8 @@ export async function queryEduSchInfo(edu_sch_code: number) {
 
     return result;
   } catch (error) {
-    throw new Error('queryEduSchInfo error -- ' + error);
+    console.error('queryEduSchInfo error -- ' + error);
+    return null;
   }
 }
 
@@ -216,7 +231,8 @@ export async function queryEduExamInfoWithEduCode(edu_code: number) {
 
     return result;
   } catch (error) {
-    throw new Error('queryEduExamInfoWithEduCode error -- ' + error);
+    console.error('queryEduExamInfoWithEduCode error -- ' + error);
+    return null;
   }
 } 
 
@@ -246,7 +262,8 @@ export async function queryEduExamContentsWithEduCode(edu_code: number) {
   
     return result;
   } catch (error) {
-    throw new Error('queryEduExamContentsWithEduCode error -- ' + error);
+    console.error('queryEduExamContentsWithEduCode error -- ' + error);
+    return null;
   }
 }
 
@@ -278,11 +295,11 @@ export async function saveCompleteMemberInfo(eitem: tb_edu_sch_memberAttributes)
     }
   } catch (error) {
     console.error('saveCompleteMemberInfo error -- ' + error);
-    // throw new Error('saveCompleteMemberInfo error -- ' + error);
     return false;
   }
 }
 
+// @ .NET GetAccountInfo
 // account_code로 계정 정보 가져오는 쿼리
 export async function queryAccountInfo(account_code: number) {
   try {
@@ -305,7 +322,8 @@ export async function queryAccountInfo(account_code: number) {
 
     return result;
   } catch (error) { 
-    throw new Error('queryAccountInfo error -- ' + error);
+    console.error('queryAccountInfo error -- ' + error);
+    return null;
   }
 }
 
@@ -352,7 +370,8 @@ export async function queryContractInfoWithTablet(site_code: number, account_cod
 
     return result;
   } catch (error) {
-    throw new Error('queryContractInfoWithTablet error -- ' + error);
+    console.error('queryContractInfoWithTablet error -- ' + error);
+    return null;
   }
 }
 
@@ -367,7 +386,8 @@ export async function queryBlockedInfo(account_code: number) {
 
     return result;
   } catch (error) {
-    throw new Error('queryBlockedInfo error -- ' + error);
+    console.error('queryBlockedInfo error -- ' + error);
+    return null;
   }
 }
 
@@ -386,7 +406,8 @@ export async function queryHealthInfoBP(site_code: number, account_code: number,
   
     return result;
   } catch (error) {
-    throw new Error('queryHealthInfoBP error -- ' + error);
+    console.error('queryHealthInfoBP error -- ' + error);
+    return null;
   }
 }
 
@@ -430,7 +451,8 @@ export async function saveHealthInfoBP(item: tb_health_bpAttributes) {
     }
     
   } catch (error) {
-    throw new Error('saveHealthInfoBP error -- ' + error);
+    console.error('saveHealthInfoBP error -- ' + error)
+    return false;
   }
 }
 
@@ -468,7 +490,8 @@ export async function saveHealthInfoAL(item: tb_health_alcoholAttributes) {
     }
     
   } catch (error) {
-    throw new Error('saveHealthInfoAL error -- ' + error);
+    console.error('saveHealthInfoAL error -- ' + error);
+    return false;
   }
 }
 
@@ -483,7 +506,8 @@ export async function queryAccountInfoWithMobile(mobile: string) {
 
     return result;
   } catch (error) {
-    throw new Error('queryAccountInfoWithMobile error -- ' + error);
+    console.error('queryAccountInfoWithMobile error -- ' + error);
+    return null;
   }
 }
 
@@ -498,7 +522,8 @@ export async function querySiteInfo(site_code: number) {
 
     return result;
   } catch (error) {
-    throw new Error('querySiteInfo error -- ' + error);
+    console.error('querySiteInfo error -- ' + error);
+    return null;
   }
 }
 
@@ -535,7 +560,8 @@ export async function queryContractInfoWithSite(site_code: number, account_code:
   
     return result;
   } catch (error) {
-    throw new Error('queryContractInfoWithSite error -- ' + error);
+    console.error('queryContractInfoWithSite error -- ' + error);
+    return null;
   }
 }
 
@@ -554,7 +580,6 @@ export async function addEduJudgeInfo(item: tb_edu_judgeAttributes) {
 
     return result.code;
   } catch (error) {
-    // throw new Error('addEduJudgeInfo error -- ' + error);
     console.error('addEduJudgeInfo error -- ' + error);
     return -1;
   }
@@ -571,7 +596,6 @@ export async function addEduJudgeContentsInfo(item: tb_edu_judge_contentsAttribu
 
     return !!result;
   } catch (error) {
-     // throw new Error('addEduJudgeContentsInfo error -- ' + error);
     console.error('addEduJudgeContentsInfo error -- ' + error);
     return false;
   }
@@ -589,7 +613,8 @@ export async function queryEduMember(edu_sch_code: number, account_code: number)
 
     return result;
   } catch (error) {
-    throw new Error('queryEduMember error -- ' + error);
+    console.error('queryEduMember error -- ' + error)
+    return null;
   }
 }
 
@@ -614,7 +639,6 @@ export async function updateEduSchMember(item: tb_edu_sch_memberAttributes) {
     
     return false;
   } catch (error) {
-    // throw new Error('updateEduSchMember error -- ' + error);
     console.error('updateEduSchMember error -- ' + error);
     return false;
   }
@@ -659,7 +683,8 @@ export async function queryContractInfo(contract_code: number) {
 
     return result;
   } catch (error) {
-    throw new Error('queryContractInfo error -- ' + error);
+    console.error('queryContractInfo error -- ' + error);
+    return null;
   }
 }
 
@@ -756,7 +781,7 @@ export async function querySiteConfig(site_code: number) {
   }
 }
 
-//
+// @ .NET QueryHealthList_BP_TOP
 export async function queryHealthListBpTop(site_code: number, account_code: number) {
   try {
     const result = await models.tb_health_bp.findAll({
@@ -770,7 +795,7 @@ export async function queryHealthListBpTop(site_code: number, account_code: numb
 
     return result;
   } catch (error) {
-    // throw new Error('queryHealthListBPTOP error -- ' + error);
+    console.error('queryHealthListBPTOP error -- ' + error);
     return null;
   }
 }
@@ -790,12 +815,12 @@ export async function queryHealthListBpByDate(site_code: number, account_code: n
 
     return result;
   } catch (error) {
-    // throw new Error('queryHealthListBpByDate error -- ' + error);
+    console.error('queryHealthListBpByDate error -- ' + error);
     return null;
   }
 } 
 
-//
+// @ .NET QueryHealthList_ALCOHOL_TOP
 export async function queryHealthListAlTop(site_code: number, account_code: number) {
   try {
     const result = await models.tb_health_alcohol.findAll({
@@ -809,7 +834,7 @@ export async function queryHealthListAlTop(site_code: number, account_code: numb
 
     return result;
   } catch (error) {
-    // throw new Error('queryHealthListBPTOP error -- ' + error);
+    console.error('queryHealthListAlTop error -- ' + error);
     return null;
   }
 }
@@ -829,10 +854,48 @@ export async function queryHealthListAlByDate(site_code: number, account_code: n
 
     return result;
   } catch (error) {
-    // throw new Error('queryHealthListBpByDate error -- ' + error);
+    console.error('queryHealthListAlByDate error -- ' + error);
     return null;
   }
 } 
+
+// @ .NET QueryHealthList_OXYGEN_TOP
+export async function queryHealthListOxTop(site_code: number, account_code: number) {
+  try {
+    const result = await models.tb_health_oxygen.findAll({
+      where: {
+        site_code,
+        account_code
+      },
+      order: [['measure_dt', 'DESC']],
+      limit: 10
+    });
+
+    return result;
+  } catch (error) {
+    console.error('queryHealthListOxTop error -- ' + error);
+    return null;
+  }
+}
+
+// @ .NET QueryHealthList_STRESS_TOP
+export async function queryHealthListStTop(site_code: number, account_code: number) {
+  try {
+    const result = await models.tb_health_stress.findAll({
+      where: {
+        site_code,
+        account_code
+      },
+      order: [['measure_dt', 'DESC']],
+      limit: 10
+    });
+
+    return result;
+  } catch (error) {
+    console.error('queryHealthListStTop error -- ' + error);
+    return null;
+  }
+}
 
 //
 export async function queryEduMemberWithSite(site_code: number, account_code: number) {
@@ -859,7 +922,7 @@ export async function queryEduMemberWithSite(site_code: number, account_code: nu
 
     return result;
   } catch (error) {
-    // throw new Error('queryEduMemberWithSite error -- ' + error);
+    console.error('queryEduMemberWithSite error -- ' + error);
     return null;
   }
 }
@@ -926,8 +989,7 @@ export async function saveCommuteInfo(item: tb_commuteAttributes) {
       return false;
     }
   } catch (error) {
-    // throw new Error('updateCommuteInfo error -- ' + error);
-    console.error('addCommuteInfo error -- ' + error);
+    console.error('saveCommuteInfo error -- ' + error);
     return false;
   }
 }
@@ -1028,9 +1090,605 @@ export async function queryContracts(site_code: number, cstate: ContractState,
   ctype: ContractType, sdt: string, edt: string, search_text: string) {
 
   try {
+    let qry = `
+      SELECT
+      A.name,
+      A.state_code,
+      A.allowed_code,
+      A.mobile,
+      C.*,
+      P.name AS sosok,
+      (SELECT state
+       FROM tb_blocked
+       WHERE account_code = C.account_code
+         AND site_code = C.site_code
+         AND partner_code = C.partner_code
+       LIMIT 1) AS blocked_state,
+      B.state AS blocked_state,
+      B.contents AS blocked_contents
+    FROM tb_contract C
+    LEFT JOIN tb_account A ON C.account_code = A.code
+    LEFT JOIN tb_partner P ON C.partner_code = P.code
+    LEFT JOIN tb_partner_contract PC ON P.code = PC.partner_code AND PC.site_code = C.site_code
+    LEFT JOIN tb_lib L ON C.const_type_code = L.code
+    LEFT JOIN tb_blocked B ON C.account_code = B.account_code
+                          AND C.partner_code = B.partner_code
+                          AND C.site_code = B.site_code
+    `;
 
+    const replacements: any = { site_code };
+
+    // 필터: 사이트
+    qry += ` WHERE PC.site_code = :site_code `;
+
+    const today = moment().format('YYYY-MM-DD');
+    replacements.TODAY = today;
+
+    // 계약 유효
+    if (cstate === ContractState.VALID) {
+      qry += ` AND C.is_approval = :is_approval `;
+      replacements.is_approval = 1;
+
+      qry += ` AND ( (C.period_begin_dt <= :TODAY) AND (:TODAY <= C.period_end_dt) ) `;
+      qry += ` AND NOT(A.code IN (
+                  SELECT account_code
+                    FROM tb_blocked
+                  WHERE state = 1
+                    AND site_code = C.site_code
+                    AND account_code = C.account_code
+                    AND partner_code = C.partner_code
+                )) `;
+    }
+
+    // 계약대기
+    if (cstate === ContractState.WAIT) {
+      qry += ` AND C.is_approval = :is_approval `;
+      replacements.is_approval = 0;
+
+      qry += ` AND NOT(A.code IN (
+                  SELECT account_code
+                    FROM tb_blocked
+                  WHERE state = 1
+                    AND site_code = C.site_code
+                    AND account_code = C.account_code
+                    AND partner_code = C.partner_code
+                )) `;
+    }
+
+    // 계약만료
+    if (cstate === ContractState.EXPIRE) {
+      qry += ` AND C.is_approval = :is_approval `;
+      replacements.is_approval = 1;
+
+      qry += ` AND DATE(C.period_end_dt) <= DATE(NOW()) `;
+      qry += ` AND NOT(A.code IN (
+                  SELECT account_code
+                    FROM tb_blocked
+                  WHERE state = 1
+                    AND site_code = C.site_code
+                    AND account_code = C.account_code
+                    AND partner_code = C.partner_code
+                )) `;
+    }
+
+    // 계약불가
+    if (cstate === ContractState.NOT_ADMIT) {
+      qry += ` AND A.code IN (
+                  SELECT account_code
+                    FROM tb_blocked
+                  WHERE state = 1
+                    AND site_code = C.site_code
+                    AND account_code = C.account_code
+                    AND partner_code = C.partner_code
+                ) `;
+    }
+
+    // 계약타입 필터
+    if (ctype !== ContractType.ALL) {
+      qry += ` AND C.contract_type = :contract_type `;
+      replacements.contract_type = ctype;
+    }
+
+    // 날짜 검색
+  if (sdt !== "" && edt !== "") {
+    qry += `
+      AND (
+        (C.period_begin_dt <= :sdt AND :sdt <= C.period_end_dt)
+        OR (C.period_begin_dt <= :edt AND :edt <= C.period_end_dt)
+        OR (C.period_begin_dt >= :sdt AND :edt >= C.period_begin_dt)
+        OR (C.period_end_dt >= :sdt AND :edt >= C.period_end_dt)
+      )
+    `;
+    replacements.sdt = sdt;
+    replacements.edt = edt;
+  }
+
+  // 검색 텍스트
+  if (search_text && search_text.trim() !== "") {
+    qry += `
+      AND (
+        A.name ILIKE :search_text
+        OR A.mobile ILIKE :search_text
+        OR P.name ILIKE :search_text
+        OR L.view_text ILIKE :search_text
+      )
+    `;
+    replacements.search_text = `%${search_text}%`;
+  }
+
+  // 인증코드 필터 + 정렬
+  qry += ` AND A.auth_code = 0 ORDER BY A.code `;
+
+  const result = await sequelize.query(qry, {
+    type: QueryTypes.SELECT,
+    replacements
+  });
+
+  return result;
+    
   } catch (error) {
     console.error('queryContracts error -- ' + error);
     return null;
   }
 }
+
+// 사이트 해당하는 근로자 전체
+export async function queryContractsWithSiteCode(site_code: number) {
+  try {
+    const today = moment().format('YYYY-MM-DD');
+
+    type tbContactAttributesWithExtra = tb_contractAttributes & {
+      today_commute: number,
+      illness_state: number,
+      age: number
+    };
+
+    const result = sequelize.query<tbContactAttributesWithExtra>(
+      `
+      SELECT 
+      C.*,
+
+      A.illness_state AS illness_state,
+      A.face AS face,
+      A.mobile AS mobile,
+      A.name AS name,
+      (
+        SELECT COUNT(*)
+        FROM tb_commute T
+        WHERE
+          T.site_code = :site_code
+          AND T.state_code = 1
+          AND T.account_code = C.account_code
+          AND :in_dt = TO_CHAR(T.in_dt, 'YYYY-MM-DD')
+      ) AS today_commute,
+      P.name AS sosok,
+      B.state AS blocked_state,
+      B.contents AS blocked_contents
+      FROM tb_contract C
+        LEFT JOIN tb_account A ON C.account_code = A.code
+        LEFT JOIN tb_partner P ON C.partner_code = P.code
+        LEFT JOIN tb_blocked B ON C.account_code = B.account_code
+                              AND C.partner_code = B.partner_code
+                              AND C.site_code = B.site_code
+      WHERE C.site_code = :site_code
+      `,
+      {
+        replacements: {
+          site_code,
+          in_dt: today
+        },
+        type: QueryTypes.SELECT
+      }
+    );
+
+    return result;
+  } catch (error) {
+    console.error('queryContractsWithSiteCode error -- ' + error);
+    return null;
+  }
+}
+
+// 사이트별 근로자 소속된 협력사 코드
+export async function queryContractsPartners(site_code: number) {
+  try {
+    const result = await sequelize.query<{ partner_code: number }>(
+      `
+      SELECT
+        partner_code
+      FROM tb_contract C
+        LEFT JOIN tb_partner P ON P.code = C.partner_code
+      WHERE C.site_code = :site_code
+      GROUP BY partner_code
+      `,
+      {
+        replacements: { site_code },
+        type: QueryTypes.SELECT
+      }
+    );
+
+    return result.map(row => row.partner_code);
+  } catch (error) {
+    console.error('queryContractsPartners error -- ' + error);
+    return null;
+  }
+}
+
+// @ .NET GetPartnerInfo
+export async function queryPartnerInfo(code: number) {
+  try {
+    const today = moment().format('YYYY-MM-DD');
+
+    const qry = `
+      SELECT P.*,
+            P2.site_code,
+            S.c_begin_dt,
+            S.c_end_dt,
+            P2.mgr_contact,
+            P2.period_begin,
+            P2.period_end,
+            S.name AS site_name,
+            (SELECT COUNT(code)
+              FROM tb_contract
+              WHERE site_code = P2.site_code
+                AND partner_code = P2.partner_code
+                AND is_approval = 1
+                AND period_end_dt > :today
+            ) AS member_count,
+            P2.code AS pc_code
+      FROM tb_partner P
+        LEFT JOIN tb_partner_contract P2 ON P.code = P2.partner_code
+        LEFT JOIN tb_site S ON P2.site_code = S.code
+      WHERE P.code = :code
+    `;
+    
+    const result = await sequelize.query<tb_partnerAttributes>(qry, {
+      type: QueryTypes.SELECT,
+      replacements: {
+        today,
+        code
+      },
+      plain: true
+    });
+
+    return result;
+  } catch (error) {
+    console.error('queryPartnerInfo error -- ' + error);
+    return null;
+  }
+}
+
+// @ .NET QueryContracts_SiteCode_withTablet
+export async function queryContractsSiteCodeWithTablet(site_code: number) {
+  try {
+    const today = dayjs().format('YYYY-MM-DD');
+
+    const sql = `
+      SELECT 
+        A.name,   
+        A.state_code,  
+        A.allowed_code,  
+        A.MOBILE,   
+        C.*, 
+        P.name AS sosok,
+        A.face AS face,
+        A.mobile AS mobile,
+        A.name AS name,
+        (
+          SELECT state 
+          FROM tb_blocked 
+          WHERE account_code = C.account_code  
+            AND site_code = C.site_code 
+            AND partner_code = C.partner_code
+          LIMIT 1
+        ) AS blocked_state
+      FROM tb_contract C
+      LEFT JOIN tb_account A ON C.account_code = A.code
+      LEFT JOIN tb_partner P ON C.partner_code = P.code
+      LEFT JOIN tb_partner_contract PC ON P.code = PC.partner_code AND PC.site_code = C.site_code
+      LEFT JOIN tb_lib L ON C.const_type_code = L.code
+      WHERE PC.site_code = :site_code
+        AND is_approval = :is_approval
+        AND (
+          (period_begin_dt <= :today) 
+          AND (:today <= period_end_dt)
+        )
+        AND NOT (A.code IN (
+          SELECT account_code 
+          FROM tb_blocked 
+          WHERE state = 1
+        ))
+    `;
+
+    const result = await sequelize.query<tb_contractAttributes & tb_accountAttributes>(sql, {
+      replacements: {
+        site_code,
+        is_approval: 1,
+        today
+      },
+      type: QueryTypes.SELECT
+    });
+
+    return result;
+  } catch (error) { 
+    console.error('queryContractsSiteCodeWithTablet error -- ' + error);
+    return null;
+  }
+}
+
+export async function updateAccountInfoFace(account_code: number, face: string) {
+  try {
+    const [updatedCount] = await models.tb_account.update(
+      {
+        face
+      },
+      {
+        where: {
+          code: account_code
+        }
+      }
+    );
+
+    if (updatedCount >= 1) {
+      return true;
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('updateAccountInfoFace error -- ' + error);
+    return false;
+  }
+}
+
+
+
+
+/*
+** 
+** custom 함수
+**
+*/
+
+
+
+
+
+// @ .NET QueryHealthList_TOP
+export async function queryHealthListTop(site_code: number, account_code: number) {
+  try {
+    const healthInfoBpItems = await queryHealthListBpTop(site_code, account_code);
+    const healthInfoAlItems = await queryHealthListAlTop(site_code, account_code);
+    const healthInfoOxItems = await queryHealthListOxTop(site_code, account_code);
+    const healthInfoStItems = await queryHealthListStTop(site_code, account_code);
+
+    const healthInfoItems = getListToRec(healthInfoBpItems ?? [], healthInfoAlItems ?? [],
+      healthInfoOxItems ?? [], healthInfoStItems ?? []);
+
+    // 정렬된 리스트로 변환 (.NET에서는 최근 10개라고 주석은 되어 있는데, 로직은 과거 -> 최근임)
+    const result: HealthInfo[] = Object.values(healthInfoItems)
+      .sort((a, b) => a.measure_dt.localeCompare(b.measure_dt)) // 과거 -> 최근 
+      .slice(0, 10);
+
+    return result;
+  } catch (error) {
+    console.error('queryHealthListTop error -- ' + error);
+    return null;
+  }
+}
+
+type HealthInfo = {
+  bp_max?: number;
+  bp_min?: number;
+  alcohol?: number;
+  oxygen?: number;
+  stress?: number;
+  measure_dt: string;
+  reg_dt?: Date;
+}
+// @ .NET GetListToDic
+// bp, al, ox, st 리스트를 하나의 리스트로 만드는 함수
+function getListToRec(
+  itemsBp: tb_health_bpAttributes[],
+  itemsAl: tb_health_alcoholAttributes[],
+  itemsOx: tb_health_oxygenAttributes[],
+  itemsSt: tb_health_stressAttributes[]
+) : Record<string, HealthInfo> {
+  const items: Record<string, HealthInfo> = {};
+
+  for (const item of itemsBp) {
+    if (!items[item.measure_dt]) {
+      items[item.measure_dt] = {
+        measure_dt: item.measure_dt,
+        reg_dt: item.reg_dt
+      };
+    }
+    items[item.measure_dt].bp_max = item.bp_max;
+    items[item.measure_dt].bp_min = item.bp_min;
+  }
+
+  for (const item of itemsAl) {
+    if (!items[item.measure_dt]) {
+      items[item.measure_dt] = {
+        measure_dt: item.measure_dt,
+        reg_dt: item.reg_dt
+      };
+    }
+    items[item.measure_dt].alcohol = item.measures;
+  }
+
+  for (const item of itemsOx) {
+    if (!items[item.measure_dt]) {
+      items[item.measure_dt] = {
+        measure_dt: item.measure_dt,
+        reg_dt: item.reg_dt
+      };
+    }
+    items[item.measure_dt].oxygen = Math.floor(item.measures);
+  }
+
+   for (const item of itemsSt) {
+    if (!items[item.measure_dt]) {
+      items[item.measure_dt] = {
+        measure_dt: item.measure_dt,
+        reg_dt: item.reg_dt
+      };
+    }
+    items[item.measure_dt].stress = Math.floor(item.measures);
+  }
+
+  return items;
+}
+
+
+// 출역 불가
+export async function commuteNotAdmit(
+  account_code: number, site_code: number,
+  reason_code: number, reason_cause: string) {
+  const today = dayjs().toDate();
+
+  const item = {
+    code: -1, // 타입 체크 통과용
+    account_code,
+    site_code,
+    state_code: CommuteState.NOT_ADMIT,
+    in_dt: today,
+    out_dt: today,
+    reg_dt: today,
+    update_dt: today,
+    reason_code,
+    reason_cause
+  };
+
+  const isSuccess = await saveCommuteInfo(item);
+}
+
+export async function getEduJudgeStatus(site_code: number, account_code: number) {
+  const eduMembers = await queryEduMemberWithSite(site_code, account_code);
+
+  if (eduMembers && eduMembers.length > 0) {
+    let passAll = true;
+
+    for (const em of eduMembers) {
+      if (em.judge_state === 0) {
+        return { code: -2, status: "시험미실시" };
+      }
+      if (em.judge_state === 2) {
+        return { code: -3, status: "불합격" };
+      }
+
+      passAll = passAll && (em.judge_state === 1);
+    }
+
+    if (!passAll) {
+      return { code: -1, status: "불합격" };
+    }
+  }
+
+  return { code: 0, status: "합격" };
+}
+
+export async function getEduStatus(site_code: number, account_code: number) {
+  const eduMembers = await queryEduMemberWithSite(site_code, account_code);
+
+  if (eduMembers && eduMembers.length > 0) {
+    let isComplete = true;
+
+    for (const em of eduMembers) {
+      const completed = em.is_complete === 1 || em.complete_state === 1;
+      isComplete = isComplete && completed;
+    }
+
+    if (!isComplete) {
+      return { code: -1, status: "교육미이수" };
+    }
+  }
+
+  return { code: 0, status: "교육이수" };
+}
+
+async function getHealthALStatus(site_code: number, account_code: number, start_time_al: Date) {
+  //전체 데이터 체크 
+  const itemsAl = await queryHealthListAlTop(site_code, account_code);
+
+  if (!itemsAl || itemsAl.length <= 0) {
+    return { code: -1, status: "음주미측정" };
+  }
+
+  //알콜측정 
+  const healthAL = await queryHealthListAlByDate(site_code, account_code, start_time_al);
+
+  
+  //알콜
+  if (healthAL && healthAL.length > 0) {
+    const h = healthAL[0];
+
+    if (h.measures >= 3) {
+      return { code: -4, status: "음주기준치초과" };
+    }
+
+    return { code: 0, status: '정상' };
+  }
+
+  return { code: -2, status: '음주기간만료' };
+}
+
+export async function getHealthBPStatus(site_code: number, account_code: number, start_time_bp: Date) {
+  const itemsBP = await queryHealthListBpTop(site_code, account_code);
+
+  if (!itemsBP || itemsBP.length <= 0) {
+    return { code: -1, status: "혈압미측정" };
+  }
+
+  //혈압 음주 체크 
+  const healthBP = await queryHealthListBpByDate(site_code, account_code, start_time_bp);
+
+  
+  //혈압
+  if (healthBP && healthBP.length > 0) {
+    const h = healthBP[0];
+
+    const defaultSiteConfig: tb_site_configAttributes = {
+      code: -1, // 타입 체크 통과용
+      site_code,
+      bp_range_type1_higher_max: 120,
+      bp_range_type1_higher_min: 140,
+      bp_range_type1_lower_max: 100,
+      bp_range_type1_lower_min: 80,
+      bp_range_type2_max: 160,
+      bp_range_type2_min: 100,
+      max_age: 0,
+      is_io_a: 0,
+      is_io_b: 0,
+      is_io_e: 0,
+      map_zoom_no: 0,
+      register_code: 0,
+      reg_dt: dayjs().toDate(),  // 또는 그냥 new Date()
+      updater_code: 0,
+      update_dt: dayjs().toDate()
+    };
+
+    //정상처리후 다시 출결시에는 체크 하지 않는다??
+    let siteConfig = await querySiteConfig(site_code);
+    const rawConfig = siteConfig?.get({ plain: true }) ?? {};
+
+    siteConfig = {
+      ...defaultSiteConfig,
+      ...rawConfig
+    } as unknown as tb_site_config;
+
+    if (typeof h.bp_max === 'number' && typeof siteConfig.bp_range_type1_higher_max === 'number'
+      && typeof h.bp_min === 'number' && typeof siteConfig.bp_range_type1_lower_min === 'number'
+    ) {
+      if (
+        h.bp_max >= siteConfig.bp_range_type1_higher_max ||
+        h.bp_min >= siteConfig.bp_range_type1_lower_min
+      ) {
+        return { code: -4, status: '고혈압' };
+      }
+    }
+
+    return { code: 0, status: '정상' };
+  }
+
+  return { code: -2, status: '혈압기간만료' };
+}
+

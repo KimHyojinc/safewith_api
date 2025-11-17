@@ -4,7 +4,8 @@ import { changeExtension } from '../../middleware/util';
 import { queryLibLabel, queryEduDetail } from '../../shared/queries';
 import { EduListItem, EduSchInfo } from '../../shared/edu';
 
-// @POST 교육 상세
+// @POST /api/edudetail 
+// 교육 상세
 async function GetEduDetail(req: Request, res: Response) {
   const { edu_code } = req.body;
 

@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { queryEduExamContentsWithEduCode, queryEduExamInfoWithEduCode } from '../../shared/queries';
 
-// @POST 교육 시험 문제
+// @POST /api/eduexam
+// 교육 시험 문제
 async function GetEduExam(req: Request, res: Response) {
   // NOTE: account_code .NET 코드에서도 받기만 하고 안 씀
   const { edu_code, account_code } = req.body;

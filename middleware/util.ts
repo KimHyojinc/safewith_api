@@ -1,4 +1,5 @@
 import moment from "moment";
+import dayjs from 'dayjs';
 import 'moment/locale/ko';
 import axios from "axios";
 import bcrypt from 'bcrypt'
@@ -171,4 +172,46 @@ export function decrypt(cipherText: string, key: string): string {
   let decrypted = decipher.update(cipherText, 'base64', 'utf8');
   decrypted += decipher.final('utf8');
   return decrypted;
+}
+
+/**
+ * 주민등록번호 앞자리(pno1: YYMMDD)로 나이를 계산한다.
+ */
+export function calculateAgeFromPno1(pno1?: string): number {
+  if (!pno1 || pno1.length < 6) return 0;
+
+  try {
+    const yy = parseInt(pno1.substring(0, 2), 10);
+    const mm = parseInt(pno1.substring(2, 4), 10);
+    const dd = parseInt(pno1.substring(4, 6), 10);
+
+    const fullYear = yy <= 20 ? 2000 + yy : 1900 + yy;
+    const birthDate = dayjs(`${fullYear}-${String(mm).padStart(2, '0')}-${String(dd).padStart(2, '0')}`);
+    const today = dayjs();
+
+    let age = today.diff(birthDate, 'year');
+    if (today.isBefore(birthDate.add(age, 'year'))) {
+      age -= 1;
+    }
+
+    return age;
+  } catch (error) {
+    console.error("age 계산 에러:", pno1, error);
+    return 0;
+  }
+}
+
+// sms 발송을 위한 user key 생성
+export function generateUserKey(): string {
+  const now = new Date();
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  const ff = now.getMilliseconds().toString().padStart(3, '0').slice(0, 2);
+  return (
+    pad(now.getMonth() + 1) +
+    pad(now.getDate()) +
+    pad(now.getHours()) +
+    pad(now.getMinutes()) +
+    pad(now.getSeconds()) +
+    ff
+  );
 }

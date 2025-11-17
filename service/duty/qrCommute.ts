@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import dayjs from "dayjs";
 import moment from 'moment';
-import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobile, queryCommuteInfoHistory, updateCommuteInfo, querySiteConfig, queryHealthListBpTop, queryHealthListBpByDate, queryHealthListAlTop, queryHealthListAlByDate, queryEduMemberWithSite, saveCommuteInfo, queryTBMList, queryTBMState, addTBMState } from '../../shared/queries';
+import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobile, queryCommuteInfoHistory, updateCommuteInfo, querySiteConfig, queryHealthListBpTop, queryHealthListBpByDate, queryHealthListAlTop, queryHealthListAlByDate, queryEduMemberWithSite, saveCommuteInfo, queryTBMList, queryTBMState, addTBMState, commuteNotAdmit, getHealthBPStatus, getEduStatus, getEduJudgeStatus } from '../../shared/queries';
 import { ResultData } from '../../shared/result';
 import { decrypt } from '../../middleware/util';
 import { CommuteState } from '../../shared/enums';
@@ -164,7 +164,7 @@ async function QrCommute(req: Request, res: Response) {
       const startTimeAl = baseTime.subtract(ddayAl, "day").toDate(); //일주일 2일
 
       const { code: bpStatus1, status: bpStatus } = await getHealthBPStatus(site_code, accInfo.code, startTimeBp);
-      const { code: alStatus1, status: alStatus } = await getHealthALStatus(site_code, accInfo.code, startTimeAl);
+      const { code: alStatus1, status: alStatus } = await getHealthBPStatus(site_code, accInfo.code, startTimeAl);
       const { code: eduStatus1, status: eduStatus } = await getEduStatus(site_code, accInfo.code);
       const { code: judgeStatus1, status: judgeStatus } = await getEduJudgeStatus(site_code, accInfo.code);
 
@@ -460,157 +460,5 @@ async function QrCommute(req: Request, res: Response) {
   }
 }
 
-// 출역 불가
-async function commuteNotAdmit(
-  account_code: number, site_code: number,
-  reason_code: number, reason_cause: string) {
-  const today = dayjs().toDate();
-
-  const item = {
-    code: -1, // 타입 체크 통과용
-    account_code,
-    site_code,
-    state_code: CommuteState.NOT_ADMIT,
-    in_dt: today,
-    out_dt: today,
-    reg_dt: today,
-    update_dt: today,
-    reason_code,
-    reason_cause
-  };
-
-  const isSuccess = await saveCommuteInfo(item);
-}
-
-async function getEduJudgeStatus(site_code: number, account_code: number) {
-  const eduMembers = await queryEduMemberWithSite(site_code, account_code);
-
-  if (eduMembers && eduMembers.length > 0) {
-    let passAll = true;
-
-    for (const em of eduMembers) {
-      if (em.judge_state === 0) {
-        return { code: -2, status: "시험미실시" };
-      }
-      if (em.judge_state === 2) {
-        return { code: -3, status: "불합격" };
-      }
-
-      passAll = passAll && (em.judge_state === 1);
-    }
-
-    if (!passAll) {
-      return { code: -1, status: "불합격" };
-    }
-  }
-
-  return { code: 0, status: "합격" };
-}
-
-async function getEduStatus(site_code: number, account_code: number) {
-  const eduMembers = await queryEduMemberWithSite(site_code, account_code);
-
-  if (eduMembers && eduMembers.length > 0) {
-    let isComplete = true;
-
-    for (const em of eduMembers) {
-      const completed = em.is_complete === 1 || em.complete_state === 1;
-      isComplete = isComplete && completed;
-    }
-
-    if (!isComplete) {
-      return { code: -1, status: "교육미이수" };
-    }
-  }
-
-  return { code: 0, status: "교육이수" };
-}
-
-async function getHealthALStatus(site_code: number, account_code: number, start_time_al: Date) {
-  //전체 데이터 체크 
-  const itemsAl = await queryHealthListAlTop(site_code, account_code);
-
-  if (!itemsAl || itemsAl.length <= 0) {
-    return { code: -1, status: "음주미측정" };
-  }
-
-  //알콜측정 
-  const healthAL = await queryHealthListAlByDate(site_code, account_code, start_time_al);
-
-  
-  //알콜
-  if (healthAL && healthAL.length > 0) {
-    const h = healthAL[0];
-
-    if (h.measures >= 3) {
-      return { code: -4, status: "음주기준치초과" };
-    }
-
-    return { code: 0, status: '정상' };
-  }
-
-  return { code: -2, status: '음주기간만료' };
-}
-
-async function getHealthBPStatus(site_code: number, account_code: number, start_time_bp: Date) {
-  const itemsBP = await queryHealthListBpTop(site_code, account_code);
-
-  if (!itemsBP || itemsBP.length <= 0) {
-    return { code: -1, status: "혈압미측정" };
-  }
-
-  //혈압 음주 체크 
-  const healthBP = await queryHealthListBpByDate(site_code, account_code, start_time_bp);
-
-  
-  //혈압
-  if (healthBP && healthBP.length > 0) {
-    const h = healthBP[0];
-
-    const defaultSiteConfig: tb_site_configAttributes = {
-      code: -1, // 타입 체크 통과용
-      site_code,
-      bp_range_type1_higher_max: 120,
-      bp_range_type1_higher_min: 140,
-      bp_range_type1_lower_max: 100,
-      bp_range_type1_lower_min: 80,
-      bp_range_type2_max: 160,
-      bp_range_type2_min: 100,
-      max_age: 0,
-      is_io_a: 0,
-      is_io_b: 0,
-      is_io_e: 0,
-      map_zoom_no: 0,
-      register_code: 0,
-      reg_dt: dayjs().toDate(),  // 또는 그냥 new Date()
-      updater_code: 0,
-      update_dt: dayjs().toDate()
-    };
-
-    //정상처리후 다시 출결시에는 체크 하지 않는다??
-    let siteConfig = await querySiteConfig(site_code);
-    const rawConfig = siteConfig?.get({ plain: true }) ?? {};
-
-    siteConfig = {
-      ...defaultSiteConfig,
-      ...rawConfig
-    } as unknown as tb_site_config;
-
-    if (typeof h.bp_max === 'number' && typeof siteConfig.bp_range_type1_higher_max === 'number'
-      && typeof h.bp_min === 'number' && typeof siteConfig.bp_range_type1_lower_min === 'number'
-    ) {
-      if (
-        h.bp_max >= siteConfig.bp_range_type1_higher_max ||
-        h.bp_min >= siteConfig.bp_range_type1_lower_min
-      ) {
-        return { code: -4, status: '고혈압' };
-      }
-    }
-
-    return { code: 0, status: '정상' };
-  }
-
-  return { code: -2, status: '혈압기간만료' };
-}
 
 export default QrCommute;
