@@ -1,7 +1,6 @@
 import { Op, QueryTypes, Sequelize } from 'sequelize';
 import { models, sequelize } from '../data-source';
 import { SiteNameDto } from './site-name';
-import moment from 'moment';
 import { tb_accountAttributes, tb_commuteAttributes, tb_contractAttributes, tb_edu_judge_contentsAttributes, tb_edu_judgeAttributes, tb_edu_sch_memberAttributes, tb_health_alcoholAttributes, tb_health_bpAttributes, tb_health_oxygenAttributes, tb_health_stressAttributes, tb_partnerAttributes, tb_site_config, tb_site_configAttributes, tb_tbm_stateAttributes, tb_tbmAttributes } from '../models/init-models';
 import { CommuteState, ContractState, ContractType } from './enums';
 import dayjs from 'dayjs';
@@ -332,7 +331,7 @@ export async function queryContractInfoWithTablet(site_code: number, account_cod
   try {
     type ContractInfoWithExtra = tb_contractAttributes & { sosok: string; };
 
-    const today = moment().format('YYYY-MM-DD');
+    const today = dayjs().format('YYYY-MM-DD');
 
     const result = await sequelize.query<ContractInfoWithExtra>(
       `
@@ -808,7 +807,7 @@ export async function queryHealthListBpByDate(site_code: number, account_code: n
         site_code,
         account_code,
         measure_dt: {
-          [Op.gte]: moment(start_time_bp).format("YYYY-MM-DD")
+          [Op.gte]: dayjs(start_time_bp).format("YYYY-MM-DD")
         }
       },
     });
@@ -847,7 +846,7 @@ export async function queryHealthListAlByDate(site_code: number, account_code: n
         site_code,
         account_code,
         measure_dt: {
-          [Op.gte]: moment(start_time_al).format("YYYY-MM-DD")
+          [Op.gte]: dayjs(start_time_al).format("YYYY-MM-DD")
         }
       },
     });
@@ -942,7 +941,7 @@ export async function saveCommuteInfo(item: tb_commuteAttributes) {
         replacements: {
           site_code: item.site_code,
           account_code: item.account_code,
-          in_dt: moment(item.in_dt).format("YYYY-MM-DD")
+          in_dt: dayjs(item.in_dt).format("YYYY-MM-DD")
         },
         type: QueryTypes.SELECT
       }
@@ -1121,7 +1120,7 @@ export async function queryContracts(site_code: number, cstate: ContractState,
     // 필터: 사이트
     qry += ` WHERE PC.site_code = :site_code `;
 
-    const today = moment().format('YYYY-MM-DD');
+    const today = dayjs().format('YYYY-MM-DD');
     replacements.TODAY = today;
 
     // 계약 유효
@@ -1235,7 +1234,7 @@ export async function queryContracts(site_code: number, cstate: ContractState,
 // 사이트 해당하는 근로자 전체
 export async function queryContractsWithSiteCode(site_code: number) {
   try {
-    const today = moment().format('YYYY-MM-DD');
+    const today = dayjs().format('YYYY-MM-DD');
 
     type tbContactAttributesWithExtra = tb_contractAttributes & {
       today_commute: number,
@@ -1316,7 +1315,7 @@ export async function queryContractsPartners(site_code: number) {
 // @ .NET GetPartnerInfo
 export async function queryPartnerInfo(code: number) {
   try {
-    const today = moment().format('YYYY-MM-DD');
+    const today = dayjs().format('YYYY-MM-DD');
 
     const qry = `
       SELECT P.*,
@@ -1362,7 +1361,7 @@ export async function queryContractsSiteCodeWithTablet(site_code: number) {
   try {
     const today = dayjs().format('YYYY-MM-DD');
 
-    const sql = `
+    const qry = `
       SELECT 
         A.name,   
         A.state_code,  
@@ -1399,7 +1398,7 @@ export async function queryContractsSiteCodeWithTablet(site_code: number) {
         ))
     `;
 
-    const result = await sequelize.query<tb_contractAttributes & tb_accountAttributes>(sql, {
+    const result = await sequelize.query<tb_contractAttributes & tb_accountAttributes>(qry, {
       replacements: {
         site_code,
         is_approval: 1,
@@ -1417,6 +1416,11 @@ export async function queryContractsSiteCodeWithTablet(site_code: number) {
 
 export async function updateAccountInfoFace(account_code: number, face: string) {
   try {
+    // const existing = await models.tb_account.findByPk(account_code);
+    // if (!existing || existing.face === face) {
+    //   return false; // 값 동일하면 update 안 함
+    // }
+    
     const [updatedCount] = await models.tb_account.update(
       {
         face
@@ -1428,11 +1432,7 @@ export async function updateAccountInfoFace(account_code: number, face: string) 
       }
     );
 
-    if (updatedCount >= 1) {
-      return true;
-    }
-    
-    return false;
+    return updatedCount >= 1;
   } catch (error) {
     console.error('updateAccountInfoFace error -- ' + error);
     return false;
@@ -1605,7 +1605,7 @@ export async function getEduStatus(site_code: number, account_code: number) {
   return { code: 0, status: "교육이수" };
 }
 
-async function getHealthALStatus(site_code: number, account_code: number, start_time_al: Date) {
+export async function getHealthALStatus(site_code: number, account_code: number, start_time_al: Date) {
   //전체 데이터 체크 
   const itemsAl = await queryHealthListAlTop(site_code, account_code);
 
@@ -1692,3 +1692,50 @@ export async function getHealthBPStatus(site_code: number, account_code: number,
   return { code: -2, status: '혈압기간만료' };
 }
 
+// @ .NET GetProfile
+// 해당하는 id의 계정정보를 가져오는 쿼리
+export async function queryProfile(userid: string) {
+  try {
+    const result = await models.tb_account.findOne({
+      where: {
+        id: userid
+      }
+    });
+
+    return result;
+  } catch (error) {
+    console.error('queryProfile error -- ', error);
+    return null;
+  }
+}
+
+// @ .NET Login
+// userid, password 로 계정정보, 현장고유코드 등을 가져오는 쿼리
+export async function login(userid: string, password: string) {
+  try {
+    const qry = `
+      SELECT
+        A.*,
+        S.name as site_name,
+        S.code as site_code
+      FROM tb_account A
+        LEFT JOIN tb_site S ON S.code = A.admin_site_code
+      WHERE A.id = :id
+        AND A.pw = :pw
+    `;
+
+    const result = await sequelize.query(qry, {
+      replacements: {
+        id: userid,
+        pw: password
+      },
+      type: QueryTypes.SELECT,
+      plain: true
+    });
+
+    return result;
+  } catch (error) {
+    console.error('login error -- ', error);
+    return null;
+  }
+}

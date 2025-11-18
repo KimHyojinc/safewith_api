@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import moment from 'moment';
+import dayjs from 'dayjs';
 import dotenv from 'dotenv';
 import { verifyToken } from '../../middleware/jwt';
 import { addEduJudgeContentsInfo, addEduJudgeInfo, queryEduMember, updateEduSchMember } from '../../shared/queries';
@@ -23,9 +23,9 @@ async function CompleteExamMember(req: Request, res: Response) {
       edu_exam_code,
       account_code,
       register_code: registerCode,
-      reg_dt: moment().toDate(),
+      reg_dt: dayjs().toDate(),
       updater_code: registerCode,
-      update_dt: moment().toDate(),
+      update_dt: dayjs().toDate(),
     };
 
     const eduJudgeCode = await addEduJudgeInfo(jitem);
@@ -61,7 +61,7 @@ async function CompleteExamMember(req: Request, res: Response) {
 
     eitem.judge_state = judge_state;
 
-    eitem.complete_dt = moment().toDate();
+    eitem.complete_dt = dayjs().toDate();
     const isSuccess = await updateEduSchMember(eitem);
 
     if (!isSuccess) {

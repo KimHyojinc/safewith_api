@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobile, querySiteInfo, queryContractInfoWithSite } from '../../shared/queries';
 import { ResultData } from '../../shared/result';
 import { ContractType } from '../../shared/enums';
@@ -66,7 +66,7 @@ async function QrAccountLogin(req: Request, res: Response) {
       pno2: accInfo.pno2,
       mobile: accInfo.mobile,
       contract_code: contractInfoB?.code ?? 0,
-      contract_reg_dt: contractInfoB?.reg_dt ? moment(contractInfoB?.reg_dt).format('YYYY/MM/DD') : null,
+      contract_reg_dt: contractInfoB?.reg_dt ? dayjs(contractInfoB?.reg_dt).format('YYYY/MM/DD') : null,
       client_code: accInfo.client_code,
       last_site_code: accInfo.last_site_code,
       auth_code: accInfo.auth_code,

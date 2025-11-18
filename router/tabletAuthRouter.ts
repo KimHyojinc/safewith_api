@@ -2,7 +2,7 @@ import express from "express";
 import checkAuth from "../middleware/checkAuth";
 import multer from "multer";
 import path from "path";
-import { Login, LoginWorker, Logout, GetEXSiteList } from "../service/auth";
+import { Login, LoginWorker, Logout, GetEXSiteList, ChkToken, MakeToken } from "../service/auth";
 import GetTestAuth from "../service/auth/getTestAuth";
 import { auth } from '../middleware/auth';
 
@@ -24,5 +24,7 @@ tabletAuthRouter.post('/login/admin', Login);
 tabletAuthRouter.post('/login/worker', LoginWorker);
 tabletAuthRouter.post('/logout', Logout);
 tabletAuthRouter.post('/site/list', auth, GetEXSiteList);
+tabletAuthRouter.post('/maketoken', MakeToken);
+tabletAuthRouter.post('/chktoken', ChkToken);
 
 export default tabletAuthRouter;

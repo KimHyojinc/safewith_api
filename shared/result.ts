@@ -1,8 +1,8 @@
 export enum ResultType {
     OK = 'OK',
-    Error = 'Error',
-    NotExist = 'NotExist',
-    Exist = 'Exist'
+    ERROR = 'Error',
+    NOT_EXIST = 'NotExist',
+    EXIST = 'Exist'
 }
 
 export class ResultData {
@@ -10,8 +10,8 @@ export class ResultData {
   result: ResultType = ResultType.OK;
   msg_code: number = 0;
   message: string = '정상처리되었습니다';
-  isCommute: boolean = true;
   data: string | null = null;
+  isCommute: boolean = true;
 
   // 도메인 필드들 — C# 기본값처럼 전부 초기화
   account_code: number = 0;
@@ -68,7 +68,7 @@ export class ResultData {
 
   static error(overrides: Partial<ResultData> = {}) {
     return new ResultData({
-      result: ResultType.Error,
+      result: ResultType.ERROR,
       msg_code: -1,
       message: '실패처리',
       isCommute: true,

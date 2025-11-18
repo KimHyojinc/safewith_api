@@ -1,8 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { models } from '../../data-source';
-import { convertBase64ToString, dev_mode, verifyPassword } from '../../middleware/util';
+import { convertBase64ToString, verifyPassword } from '../../middleware/util';
 import { ResultData } from '../../shared/result';
 
+// @POST /api/login/worker
+// 근로자 로그인
 async function LoginWorker(req: Request, res: Response) {
   const { id, pw, site_code } = req.body;
 

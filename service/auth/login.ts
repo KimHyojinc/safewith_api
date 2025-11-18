@@ -1,11 +1,13 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { models } from '../../data-source';
-import { convertBase64ToString, dev_mode, verifyPassword } from '../../middleware/util';
-import { generateToken, verifyToken } from '../../middleware/jwt';
+import { convertBase64ToString, verifyPassword } from '../../middleware/util';
+import { generateToken } from '../../middleware/jwt';
 import { setAuthCookie } from '../../middleware/auth';
 import { ResultData } from '../../shared/result';
 import { AdminType } from '../../shared/enums';
 
+// @POST /api/login/admin
+// 관리자 로그인
 // [2025-11-07] NOTE: 혹시 나중에 admin, worker 구분해야하면, jwt payload로 구분
 async function Login(req: Request, res: Response) {
     const { id, pw } = req.body;
@@ -31,7 +33,7 @@ async function Login(req: Request, res: Response) {
         const isPassword = verifyPassword(String(convertBase64ToString(pw)), String(userInfo.pw));
 
         if (!isPassword) {
-            return res.status(403).json({ result: false, message: '비밀번호가 일치하지 않습니다.' });
+            return res.status(401).json({ result: false, message: '비밀번호가 일치하지 않습니다.' });
         }
 
         const accountInstance = await models.tb_account.findOne({

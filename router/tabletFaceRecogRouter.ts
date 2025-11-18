@@ -1,8 +1,8 @@
 import express from "express";
 import multer from "multer";
 import path from "path";
-// import FaceTemplate from '../service/faceRecog/faceTemplate';
-// import RegFace from '../service/faceRecog/regFace';
+import FaceTemplate from '../service/faceRecog/faceTemplate';
+import RegFace from '../service/faceRecog/regFace';
 
 const tabletFaceRecogRouter = express.Router();
 
@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
   });
 const upload = multer({ storage: storage });
 
-// tabletFaceRecogRouter.post('/facetemplate', FaceTemplate);
-// tabletFaceRecogRouter.post('/regface', RegFace);
+tabletFaceRecogRouter.post('/facetemplate', FaceTemplate);
+tabletFaceRecogRouter.post('/regface', RegFace);
 
 export default tabletFaceRecogRouter;

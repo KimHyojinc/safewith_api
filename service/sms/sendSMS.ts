@@ -1,6 +1,4 @@
 import { Request, Response } from "express";
-import {  } from '../../shared/queries';
-import { ResultData } from '../../shared/result';
 import { generateUserKey } from '../../middleware/util';
 import fs from "fs";
 import path from "path";
@@ -25,11 +23,11 @@ async function sendPostMessage(
         form.append(`imageFile${i + 1}`, stream, path.basename(filePaths[i]));
       }
     }
-    console.log(process.env.BIZ_WIDE_API_KEY)
+    console.log(process.env.BIZ_WIDE_DEV_API_KEY)
     const response = await axios.post(url, form, {
       headers: {
         ...form.getHeaders(),
-        sejongApiKey: process.env.BIZ_WIDE_API_KEY || ''
+        sejongApiKey: process.env.BIZ_WIDE_DEV_API_KEY || ''
       },
       maxBodyLength: Infinity,
       maxContentLength: Infinity
@@ -68,7 +66,7 @@ async function SendSMS(req: Request, res: Response) {
       contents
     };
 
-    const responseJson = await sendPostMessage(process.env.BIZ_WIDE_API || '', payload);
+    const responseJson = await sendPostMessage(process.env.BIZ_WIDE_DEV_API || '', payload);
     const response = JSON.parse(responseJson);
 
     if (response.code === '200') {

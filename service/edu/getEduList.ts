@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { EduListItem, EduSchInfo, PageListContext } from '../../shared/edu';
 import { queryLibLabel, queryEduSch } from '../../shared/queries';
 
@@ -43,7 +43,7 @@ async function GetEduList(req: Request, res: Response) {
             subject: item.subject,
             exp_begin: item.exp_begin,
             exp_end: item.exp_end,
-            reg_dt: moment(item.reg_dt).format("YYYY.MM.DD"),
+            reg_dt: dayjs(item.reg_dt).format("YYYY.MM.DD"),
             movie_url: item.file_path,
             filename: item.file_name,
             thumbnail: item.thumbnail

@@ -8,7 +8,7 @@
     "start": "cross-env NODE_ENV=development nodemon index.ts",
     "pro": "pm2 start ecosystem.config.cjs --only alcofind_production --env production",
     "schedule": "pm2 start ecosystem.config.js --only fredi_schedule --env production",
-    "build": "tsc && npm run copy-files",
+    "build": "tsc",
     "copy-files": "cp -rf src/config build/config"
   },
   "author": "",

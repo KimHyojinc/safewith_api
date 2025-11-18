@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobile, querySiteInfo, queryAccountInfo, queryContractInfo, queryContractsWithSiteCode, queryContractsPartners, queryPartnerInfo } from '../../shared/queries';
-import { ResultData } from '../../shared/result';
+import { queryContractsWithSiteCode, queryContractsPartners, queryPartnerInfo } from '../../shared/queries';
 import dayjs from 'dayjs';
 import { calculateAgeFromPno1 } from '../../middleware/util';
 

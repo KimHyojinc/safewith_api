@@ -23,7 +23,7 @@ async function GetContractDetail(req: Request, res: Response) {
     const contractInfo = await queryContractInfo(contract_code);
     if (!contractInfo) {
       return res.status(404).json({
-        result: ResultType.Error,
+        result: ResultType.ERROR,
         message: "계약정보가 존재하지 않습니다.",
         msg_code: 21,
         contract_code: 0

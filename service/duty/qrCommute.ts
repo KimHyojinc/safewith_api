@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import dayjs from "dayjs";
-import moment from 'moment';
-import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobile, queryCommuteInfoHistory, updateCommuteInfo, querySiteConfig, queryHealthListBpTop, queryHealthListBpByDate, queryHealthListAlTop, queryHealthListAlByDate, queryEduMemberWithSite, saveCommuteInfo, queryTBMList, queryTBMState, addTBMState, commuteNotAdmit, getHealthBPStatus, getEduStatus, getEduJudgeStatus } from '../../shared/queries';
+import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobile, queryCommuteInfoHistory, updateCommuteInfo, querySiteConfig, queryHealthListBpTop, queryHealthListBpByDate, queryHealthListAlTop, queryHealthListAlByDate, queryEduMemberWithSite, saveCommuteInfo, queryTBMList, queryTBMState, addTBMState, commuteNotAdmit, getHealthBPStatus, getEduStatus, getEduJudgeStatus, getHealthALStatus } from '../../shared/queries';
 import { ResultData } from '../../shared/result';
 import { decrypt } from '../../middleware/util';
 import { CommuteState } from '../../shared/enums';
@@ -164,7 +163,7 @@ async function QrCommute(req: Request, res: Response) {
       const startTimeAl = baseTime.subtract(ddayAl, "day").toDate(); //일주일 2일
 
       const { code: bpStatus1, status: bpStatus } = await getHealthBPStatus(site_code, accInfo.code, startTimeBp);
-      const { code: alStatus1, status: alStatus } = await getHealthBPStatus(site_code, accInfo.code, startTimeAl);
+      const { code: alStatus1, status: alStatus } = await getHealthALStatus(site_code, accInfo.code, startTimeAl);
       const { code: eduStatus1, status: eduStatus } = await getEduStatus(site_code, accInfo.code);
       const { code: judgeStatus1, status: judgeStatus } = await getEduJudgeStatus(site_code, accInfo.code);
 

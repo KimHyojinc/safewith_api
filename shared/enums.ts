@@ -111,3 +111,56 @@ export enum ContractType {
   ALL = 0,         // 전체 (명시적 정의)
   NONE = -1        // 아무것도 검색안함
 }
+
+// 재해 유형
+export enum RiskType {
+  FIRE = 50,     // 화재
+  BREAK = 51,    // 붕괴
+  EXPLOSION = 52, // 폭발
+  ETC = 53,      // 기타
+  NONE = -1
+}
+
+// 도면 종류
+export enum DrawingType {
+  LAYOUT = 54,     // 평면도
+  SEAT = 55,       // 배치도
+  ELEVATION = 56,  // 입면도
+  SECTION = 57,    // 단면도
+  DETAIL = 58,     // 상세도
+  INDOOR = 59,     // 실내도
+  WINDOW = 60,     // 창호도
+  TREEDIM = 61,    // 조감도
+  NONE = -1
+}
+
+// 자재 종류
+export enum MaterialType {
+  NORMAL = 62,     // 일반자재(소모성자재)
+  EQUIP = 63,      // 설비자재
+  SAFE = 64,       // 안전자재
+  CIVIL = 65,      // 토목자재
+  ARCH = 66,       // 건축자재
+  ELEC = 67,       // 전기자재
+  MACH = 68,       // 기계자재
+  FIREF = 69,      // 소방자재
+  SOFFICE = 70,    // 문구/오피스
+  NONE = -1,
+  ALL = 0
+}
+
+// 보호구 종류
+export enum ProtEqpType {
+  HELMET = 84,        // 안전모
+  SHOE = 86,          // 안전화
+  SIG_JACKET = 87,    // 신호수조끼
+  INDU_JACKET = 88,   // 유도자조끼
+  BELT = 89,          // 안전벨트
+  SPAT = 90,          // 각반
+  GOGGLE = 91,        // 보안경
+  MASK = 92,          // 보안면
+  DUST_MASK = 93,     // 방진마스크면
+  ETC = 94,           // 기타 보호구
+  ALL = 0
+}
+

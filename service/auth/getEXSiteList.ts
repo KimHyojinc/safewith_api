@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import { querySites } from '../../shared/queries';
 
+// @POST /api/site/list
+// 현장 리스트
 async function GetEXSiteList(req: Request, res: Response) {
-    const { client_code: clientCodeAsStr } = req.body;
+    const { client_code } = req.body;
 
     try {
-        const client_code = Number(clientCodeAsStr);
-
         const items = await querySites(client_code);
 
         return res.status(200).json(items);

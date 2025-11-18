@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { saveCompleteMemberInfo } from '../../shared/queries';
-import moment from 'moment';
+import dayjs from "dayjs";
 
 // @POST /api/completeedu
 // 교육 시험 완료
@@ -13,7 +13,7 @@ async function CompleteEduMember(req: Request, res: Response) {
       edu_sch_code,
       account_code,
       is_complete: 1,
-      complete_dt: moment().toDate() 
+      complete_dt: dayjs().toDate() 
     }
 
     const isSuccess = await saveCompleteMemberInfo(eitem);

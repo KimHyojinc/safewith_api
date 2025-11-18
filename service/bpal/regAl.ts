@@ -1,15 +1,16 @@
 import { Request, Response } from "express";
 import { queryAccountInfo, queryContractInfoWithTablet, saveHealthInfoAL } from '../../shared/queries';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { ResultData } from '../../shared/result';
 import { tb_health_alcoholAttributes } from '../../models/init-models';
 
-// @POST 음주 측정
+// @POST /api/alreg 
+// 음주 측정
 async function RegAl(req: Request, res: Response) {
   const { site_code, account_code, alcohol } = req.body;
 
   try {
-    const today = moment().format("YYYY-MM-DD");
+    const today = dayjs().format("YYYY-MM-DD");
 
     const accInfo = await queryAccountInfo(account_code);
     if (!accInfo) {
@@ -30,7 +31,7 @@ async function RegAl(req: Request, res: Response) {
       site_code,
       measures: alcohol,
       measure_dt: today,
-      reg_dt: moment().toDate()
+      reg_dt: dayjs().toDate()
     }
 
     const isSuccess = await saveHealthInfoAL(hinfo);

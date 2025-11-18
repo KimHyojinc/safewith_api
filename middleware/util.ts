@@ -1,4 +1,3 @@
-import moment from "moment";
 import dayjs from 'dayjs';
 import 'moment/locale/ko';
 import axios from "axios";
@@ -80,10 +79,18 @@ export function verifyPassword(inputPassword: string, storedHash: string): boole
 export function changeExtension(fileName: string, newExtension: string): string {
   return fileName.replace(/\.[^/.]+$/, newExtension);
 }
-
+/**
+ * base64 -> 문자열 디코딩
+ * @param base64Str Base64 인코딩된 문자열
+ * @returns 디코딩된 UTF-8 문자열
+ */
+export function convertBase64ToString(base64Str: string): string {
+  // Node.js 환경
+  return Buffer.from(base64Str, 'base64').toString('utf-8');
+}
 // 2025-11-05 added
 // Base64 → UTF-8 문자열 디코더
-export function convertBase64ToString(base64Str: string): string {
+export function convertBase64ToStringStrict(base64Str: string): string {
   if (typeof base64Str !== "string") {
     throw new TypeError("base64Str must be a string");
   }
@@ -138,6 +145,7 @@ export function convertBase64ToString(base64Str: string): string {
     // Node 등
     if (typeof Buffer !== "undefined" && typeof (Buffer as any).from === "function") {
       const bytes = Buffer.from(normalized, "base64");
+      // @ts-ignore
       return new TextDecoder("utf-8").decode(bytes);
     }
     // 브라우저

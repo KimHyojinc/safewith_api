@@ -1,15 +1,16 @@
 import { Request, Response } from "express";
-import {  queryAccountInfo, queryContractInfoWithTablet, queryBlockedInfo, queryHealthInfoBP, saveHealthInfoBP } from '../../shared/queries';
-import moment from 'moment';
+import {  queryAccountInfo, queryContractInfoWithTablet, queryBlockedInfo, saveHealthInfoBP } from '../../shared/queries';
+import dayjs from 'dayjs';
 import { ResultData } from '../../shared/result';
 import { tb_health_bpAttributes } from '../../models/init-models';
 
-// @POST 혈압 데이터 등록
+// @POST /api/bpreg
+// 혈압 데이터 등록
 async function RegBp(req: Request, res: Response) {
   const { site_code, account_code, bp_max, bp_min } = req.body;
 
   try {
-    const today = moment().format("YYYY-MM-DD");
+    const today = dayjs().format("YYYY-MM-DD");
 
     const accInfo = await queryAccountInfo(account_code);
     if (!accInfo) {
@@ -42,7 +43,7 @@ async function RegBp(req: Request, res: Response) {
       bp_max,
       bp_min,
       measure_dt: today,
-      reg_dt: moment().toDate()
+      reg_dt: dayjs().toDate()
     };
 
     const isSuccess = await saveHealthInfoBP(hinfo);

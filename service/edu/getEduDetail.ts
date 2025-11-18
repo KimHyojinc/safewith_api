@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { changeExtension } from '../../middleware/util';
 import { queryLibLabel, queryEduDetail } from '../../shared/queries';
 import { EduListItem, EduSchInfo } from '../../shared/edu';
@@ -31,7 +31,7 @@ async function GetEduDetail(req: Request, res: Response) {
       subject: item.subject,
       exp_begin: item.exp_begin,
       exp_end: item.exp_end,
-      reg_dt: moment(item.reg_dt).format("YYYY.MM.DD"),
+      reg_dt: dayjs(item.reg_dt).format("YYYY.MM.DD"),
       movie_url: item.file_path,
       filename: item.file_name,
       thumbnail: `${path}/${changeExtension(item.file_name, '.jpg')}`
