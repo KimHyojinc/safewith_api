@@ -1,16 +1,14 @@
 import { Request, Response } from "express";
-import {  queryAccountInfo, queryContractInfo, queryLibLabel, queryReqDocList } from '../../shared/queries';
-import dotenv from 'dotenv';
-import { ResultType } from '../../shared/result';
-import { verifyToken } from '../../middleware/jwt';
-import { PaymentType } from '../../shared/enums';
-
-dotenv.config();
+import { queryAccountInfo, queryContractInfo, queryLibLabel, queryReqDocList } from '../../shared/queries';
+import { PaymentType, ResultType } from '../../shared/enums';
 
 // const COOKIE_NAME = process.env.COOKIE_NAME ?? 'AUTH';
 
-// @POST /api/contract/detail
-// 계약정보 조회
+/**
+ * @route POST /api/contract/detail
+ * @param contract_code 계약서고유코드
+ * @summary 계약 상세
+ */
 async function GetContractDetail(req: Request, res: Response) {
   const { contract_code } = req.body;
 

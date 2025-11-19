@@ -164,3 +164,10 @@ export enum ProtEqpType {
   ALL = 0
 }
 
+// ResultData class에 사용되는 ResultType Enum
+export enum ResultType {
+    OK = 'OK',
+    ERROR = 'Error',
+    NOT_EXIST = 'NotExist',
+    EXIST = 'Exist'
+}

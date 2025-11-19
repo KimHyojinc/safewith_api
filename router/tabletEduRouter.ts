@@ -12,7 +12,6 @@ import {
   CompleteExamMember,
   CompleteEduMember
 } from '../service/edu';
-import { table } from 'console';
 
 const tabletEduRouter = express.Router();
 

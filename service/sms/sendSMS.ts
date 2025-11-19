@@ -23,7 +23,7 @@ async function sendPostMessage(
         form.append(`imageFile${i + 1}`, stream, path.basename(filePaths[i]));
       }
     }
-    console.log(process.env.BIZ_WIDE_DEV_API_KEY)
+
     const response = await axios.post(url, form, {
       headers: {
         ...form.getHeaders(),
@@ -44,8 +44,12 @@ async function sendPostMessage(
   }
 } 
 
-// @POST /api/sendsms
-// 문자전송
+/**
+ * @route POST /api/sendsms
+ * @param receiverTelNo 수신자 전화번호 
+ * @param contents 문자내용
+ * @summary 문자 전송
+ */
 async function SendSMS(req: Request, res: Response) {
   const { receiverTelNo, contents } = req.body;
 

@@ -2,7 +2,6 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import { auth } from '../middleware/auth';
-import QrLogin from '../service/duty/qrLogin';
 
 
 const tabletContractRouter = express.Router();

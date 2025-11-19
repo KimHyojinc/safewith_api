@@ -1,4 +1,4 @@
-import { Op, QueryTypes, Sequelize } from 'sequelize';
+import { Op, QueryTypes } from 'sequelize';
 import { models, sequelize } from '../data-source';
 import { SiteNameDto } from './site-name';
 import { tb_accountAttributes, tb_commuteAttributes, tb_contractAttributes, tb_edu_judge_contentsAttributes, tb_edu_judgeAttributes, tb_edu_sch_memberAttributes, tb_health_alcoholAttributes, tb_health_bpAttributes, tb_health_oxygenAttributes, tb_health_stressAttributes, tb_partnerAttributes, tb_site_config, tb_site_configAttributes, tb_tbm_stateAttributes, tb_tbmAttributes } from '../models/init-models';
@@ -12,7 +12,13 @@ import dayjs from 'dayjs';
 */
 
 
-// tb_lib에서 group_name과 code를 기준으로 label 조회
+/**
+ * 
+ * @param groupName 그룹명 (tb_lib)
+ * @param code 고유코드 (tb_lib)
+ * @returns view_text
+ * @summary tb_lib에서 group_name과 code를 기준으로 view_text 조회
+ */
 export async function queryLibLabel(groupName: string, code: number) {
   try {
     const result = await models.tb_lib.findOne({
@@ -27,7 +33,12 @@ export async function queryLibLabel(groupName: string, code: number) {
   }
 }
 
-// 현장 리스트 조회
+/**
+ * 
+ * @param client_code 발주처고유코드
+ * @returns 현장리스트
+ * @summary 현장 리스트 조회
+ */
 export async function querySites(client_code: number = -1) {
   try {
     const rows = await models.tb_site_of_client.findAll({

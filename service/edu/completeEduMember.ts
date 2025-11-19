@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { saveCompleteMemberInfo } from '../../shared/queries';
 import dayjs from "dayjs";
 
+// NOTE: 삭제
 // @POST /api/completeedu
 // 교육 시험 완료
 async function CompleteEduMember(req: Request, res: Response) {

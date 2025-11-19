@@ -4,8 +4,12 @@ import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobi
 import { ResultData } from '../../shared/result';
 import { decrypt } from '../../middleware/util';
 
-// @POST /api/qrtag 
-// 출역 QR코드
+/**
+ * @route POST /api/qrtag
+ * @param qr QR (휴대전화번호)
+ * @param site_code 현장고유코드
+ * @summary QR 태깅 확인
+ */
 async function QrTag(req: Request, res: Response) {
   const { qr, site_code } = req.body;
 

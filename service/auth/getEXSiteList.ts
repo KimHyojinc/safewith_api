@@ -1,8 +1,11 @@
 import { Request, Response } from 'express';
 import { querySites } from '../../shared/queries';
 
-// @POST /api/site/list
-// 현장 리스트
+/**
+ * @route POST /api/site/list
+ * @param client_code 발주처고유코드
+ * @summary 현장 리스트
+ */
 async function GetEXSiteList(req: Request, res: Response) {
     const { client_code } = req.body;
 

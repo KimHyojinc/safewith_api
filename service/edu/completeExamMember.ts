@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
 import dayjs from 'dayjs';
-import dotenv from 'dotenv';
 import { verifyToken } from '../../middleware/jwt';
 import { addEduJudgeContentsInfo, addEduJudgeInfo, queryEduMember, updateEduSchMember } from '../../shared/queries';
-dotenv.config();
 
 const COOKIE_NAME = process.env.COOKIE_NAME ?? 'AUTH';
 
+// NOTE: 삭제
 // @POST /api/complete_exam 
 // 교육 시험 완료
 async function CompleteExamMember(req: Request, res: Response) {

@@ -1,9 +1,4 @@
-export enum ResultType {
-    OK = 'OK',
-    ERROR = 'Error',
-    NOT_EXIST = 'NotExist',
-    EXIST = 'Exist'
-}
+import { ResultType } from './enums';
 
 export class ResultData {
     // 필수 공통 필드

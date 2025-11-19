@@ -1,7 +1,6 @@
 import express from "express";
 import multer from "multer";
 import path from "path";
-import { auth } from '../middleware/auth';
 import RegBp from '../service/bpal/regBp';
 import RegAl from '../service/bpal/regAl';
 

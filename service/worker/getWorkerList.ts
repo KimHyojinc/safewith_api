@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
-import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobile, querySiteInfo, queryAccountInfo, queryContractInfo, queryContracts } from '../../shared/queries';
-import { ResultData } from '../../shared/result';
+import { queryContracts } from '../../shared/queries';
 import { ContractState, ContractType } from '../../shared/enums';
 
-// NOTE: 일단 보류. 이거 필요없는 듯
+// NOTE: 삭제
 // @POST /api/workerlist
 // 현장 근로자 리스트 (QR체크용) 교육대상 
 async function GetWorkerList(req: Request, res: Response) {

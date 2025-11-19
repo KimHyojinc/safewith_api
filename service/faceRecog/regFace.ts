@@ -3,8 +3,12 @@ import { queryAccountInfo, updateAccountInfoFace } from '../../shared/queries';
 import { ResultData } from '../../shared/result';
 import { convertBase64ToString } from '../../middleware/util';
 
-// @POST /api/regface
-// 얼굴인식 등록
+/**
+ * @route POST /api/regface
+ * @param account_code 계정고유코드
+ * @param face 안면인식정보 (base64Template)
+ * @summary 얼굴인식 등록
+ */
 async function RegFace(req: Request, res: Response) {
   const { account_code, face } = req.body;
 

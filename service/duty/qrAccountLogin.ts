@@ -4,8 +4,13 @@ import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobi
 import { ResultData } from '../../shared/result';
 import { ContractType } from '../../shared/enums';
 
-// @POST /api/qraccount
-// QR 계약 체크
+/**
+ * @route POST /api/qraccount
+ * @param qr QR (휴대전화번호)
+ * @param site_code 현장고유코드
+ * @param contract_type 계약타입코드
+ * @summary QR 계약 체크(단말 계약용)
+ */
 async function QrAccountLogin(req: Request, res: Response) {
   const { qr, site_code, contract_type } = req.body;
 

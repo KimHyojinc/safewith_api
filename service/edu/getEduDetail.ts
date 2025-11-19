@@ -4,6 +4,7 @@ import { changeExtension } from '../../middleware/util';
 import { queryLibLabel, queryEduDetail } from '../../shared/queries';
 import { EduListItem, EduSchInfo } from '../../shared/edu';
 
+// NOTE: 삭제
 // @POST /api/edudetail 
 // 교육 상세
 async function GetEduDetail(req: Request, res: Response) {

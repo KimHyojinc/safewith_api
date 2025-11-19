@@ -4,8 +4,12 @@ import { convertBase64ToString, cryptoHashPassword } from '../../middleware/util
 import { ResultData } from '../../shared/result';
 import dayjs from 'dayjs';
 
-// @POST /api/maketoken
-// 토큰 생성
+/**
+ * @route POST /api/maketoken
+ * @param userid 유저아이디
+ * @param pw 비밀번호 (비밀번호를 base64로 인코딩한 값)
+ * @summary 토큰 생성
+ */
 async function MakeToken(req: Request, res: Response) {
     const { userid, pw } = req.body;
 

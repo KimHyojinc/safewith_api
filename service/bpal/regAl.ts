@@ -4,8 +4,13 @@ import dayjs from 'dayjs';
 import { ResultData } from '../../shared/result';
 import { tb_health_alcoholAttributes } from '../../models/init-models';
 
-// @POST /api/alreg 
-// 음주 측정
+/**
+ * @route POST /api/alreg
+ * @param site_code 현장고유코드
+ * @param account_code 계정고유코드
+ * @param alcohol 음주측정데이터
+ * @summary 음주 측정 데이터 등록
+ */
 async function RegAl(req: Request, res: Response) {
   const { site_code, account_code, alcohol } = req.body;
 

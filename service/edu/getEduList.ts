@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import { EduListItem, EduSchInfo, PageListContext } from '../../shared/edu';
 import { queryLibLabel, queryEduSch } from '../../shared/queries';
 
+// NOTE: 삭제
 // @POST /api/edulist 
 // 교육 리스트
 async function GetEduList(req: Request, res: Response) {

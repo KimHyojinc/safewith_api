@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { queryEduExamContentsWithEduCode, queryEduExamInfoWithEduCode } from '../../shared/queries';
 
+// NOTE: 삭제
 // @POST /api/eduexam
 // 교육 시험 문제
 async function GetEduExam(req: Request, res: Response) {

@@ -3,8 +3,11 @@ import { queryContractsWithSiteCode, queryContractsPartners, queryPartnerInfo } 
 import dayjs from 'dayjs';
 import { calculateAgeFromPno1 } from '../../middleware/util';
 
-// @POST /api/workerinfo
-// 근로자 정보 상세2 (계약)
+/**
+ * @route POST /api/workerinfo
+ * @param site_code 현장고유코드
+ * @summary 근로자 정보 상세2 (계약)
+ */
 async function GetWorkerInfo(req: Request, res: Response) {
   const { site_code } = req.body;
 
@@ -19,7 +22,7 @@ async function GetWorkerInfo(req: Request, res: Response) {
     //해당 사이트의 파트너 
     const itemsTotalRaw = await queryContractsWithSiteCode(site_code);
 
-    //승인및 계약유효 날짜
+    // 계약이 승인되었고 날짜가 유효한 근로자 필터링
     const itemsTotal = itemsTotalRaw
       ?.filter(k => k.is_approval === 1)
       .filter(k =>

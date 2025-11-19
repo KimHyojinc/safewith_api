@@ -4,8 +4,12 @@ import { convertBase64ToString, cryptoHashPassword } from '../../middleware/util
 import { ResultData } from '../../shared/result';
 import dayjs from 'dayjs';
 
-// @POST /api/chktoken
-// 토큰 인증
+/**
+ * @route POST /api/chktoken
+ * @param userid 유저아이디
+ * @param token 토큰 (base64)
+ * @summary 토큰 인증
+ */
 async function ChkToken(req: Request, res: Response) {
     const { userid, token } = req.body;
 

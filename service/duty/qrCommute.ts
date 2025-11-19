@@ -6,8 +6,12 @@ import { decrypt } from '../../middleware/util';
 import { CommuteState } from '../../shared/enums';
 import { tb_site_config, tb_site_configAttributes } from '../../models/tb_site_config';
 
-// @POST /api/qrcommute 
-// 출결하기
+/**
+ * @route POST /api/qrcommute
+ * @param qr QR (휴대전화번호)
+ * @param site_code 현장고유코드
+ * @summary 출결 처리(출역)
+ */
 async function QrCommute(req: Request, res: Response) {
   const { qr, site_code } = req.body;
 

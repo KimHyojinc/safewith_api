@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
-import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobile, querySiteInfo, queryAccountInfo, queryContractInfo, queryHealthListTop } from '../../shared/queries';
-import { ResultData } from '../../shared/result';
+import { queryHealthListTop } from '../../shared/queries';
 import dayjs from 'dayjs';
 
-// @POST /api/healthlist
-// 건강데이터 리스트
+/**
+ * @route POST /api/healthlist -- 미정
+ * @param site_code 현장고유코드
+ * @param account_code 계정고유코드
+ * @summary 건강데이터 리스트
+ */
 async function GetHealthPressureList(req: Request, res: Response) {
   const { site_code, account_code } = req.body;
 

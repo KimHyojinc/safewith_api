@@ -1,5 +1,4 @@
 import express from "express";
-import checkAuth from "../middleware/checkAuth";
 import multer from "multer";
 import path from "path";
 import { Login, LoginWorker, Logout, GetEXSiteList, ChkToken, MakeToken } from "../service/auth";

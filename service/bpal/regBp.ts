@@ -1,9 +1,17 @@
 import { Request, Response } from "express";
-import {  queryAccountInfo, queryContractInfoWithTablet, queryBlockedInfo, saveHealthInfoBP } from '../../shared/queries';
+import { queryAccountInfo, queryContractInfoWithTablet, queryBlockedInfo, saveHealthInfoBP } from '../../shared/queries';
 import dayjs from 'dayjs';
 import { ResultData } from '../../shared/result';
 import { tb_health_bpAttributes } from '../../models/init-models';
 
+/**
+ * @route POST /api/bpreg
+ * @param site_code 현장고유코드
+ * @param account_code 계정고유코드
+ * @param bp_max 최고혈압
+ * @param bp_min 최저혈압
+ * @summary 혈압 측정 데이터 등록
+ */
 // @POST /api/bpreg
 // 혈압 데이터 등록
 async function RegBp(req: Request, res: Response) {

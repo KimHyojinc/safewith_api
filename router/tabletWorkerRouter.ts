@@ -1,7 +1,6 @@
 import express from "express";
 import multer from "multer";
 import path from "path";
-import { auth } from '../middleware/auth';
 import GetWorkerDetail from '../service/worker/getWorkerDetail';
 import GetWorkerList from '../service/worker/getWorkerList';
 import GetWorkerInfo from '../service/worker/getWorkerInfo';

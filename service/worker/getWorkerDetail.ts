@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobile, querySiteInfo, queryAccountInfo, queryContractInfo } from '../../shared/queries';
-import { ResultData } from '../../shared/result';
+import { queryAccountInfo, queryContractInfo } from '../../shared/queries';
 
+// NOTE: 삭제
 // @POST /api/worker/detail
 // 근로자 상세정보
 async function GetWorkerDetail(req: Request, res: Response) {

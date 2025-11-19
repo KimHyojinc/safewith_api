@@ -3,8 +3,13 @@ import { models } from '../../data-source';
 import { convertBase64ToString, verifyPassword } from '../../middleware/util';
 import { ResultData } from '../../shared/result';
 
-// @POST /api/login/worker
-// 근로자 로그인
+/**
+ * @route POST /api/login/worker
+ * @param id 아이디
+ * @param pw 비밀번호 (비밀번호를 base64로 인코딩한 값)
+ * @param site_code 현장고유코드
+ * @summary 근로자 로그인
+ */
 async function LoginWorker(req: Request, res: Response) {
   const { id, pw, site_code } = req.body;
 

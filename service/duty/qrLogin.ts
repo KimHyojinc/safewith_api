@@ -2,8 +2,12 @@ import { Request, Response } from "express";
 import { queryContractInfoWithTablet, queryBlockedInfo, queryAccountInfoWithMobile, querySiteInfo } from '../../shared/queries';
 import { ResultData } from '../../shared/result';
 
-// @POST /api/qrlogin
-// QR 로그인
+/**
+ * @route POST /api/qrlogin
+ * @param qr QR (휴대전화번호)
+ * @param site_code 현장고유코드
+ * @summary QR 로그인
+ */
 async function QrLogin(req: Request, res: Response) {
   const { qr, site_code } = req.body;
 

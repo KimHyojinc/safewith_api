@@ -3,6 +3,7 @@ import { queryEduSchInfo } from '../../shared/queries';
 import { EduSchInfo } from '../../shared/edu';
 import { downloadFileAsync } from '../../middleware/util';
 
+// NOTE: 삭제
 // @GET /api/edumovie/:edu_sch_code
 // 교육 영상
 async function GetEduMovie(req: Request, res: Response) {

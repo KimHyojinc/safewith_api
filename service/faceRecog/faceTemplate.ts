@@ -1,9 +1,12 @@
 import { Request, Response } from "express";
 import { queryContractsSiteCodeWithTablet } from '../../shared/queries';
-import { ResultType } from '../../shared/result';
+import { ResultType } from '../../shared/enums';
 
-// @POST /api/facetemplate
-// 얼굴인식 템플릿
+/**
+ * @route POST /api/facetemplate
+ * @param site_code 현장고유코드
+ * @summary 얼굴인식 템플릿
+ */
 async function FaceTemplate(req: Request, res: Response) {
   const { site_code } = req.body;
 
