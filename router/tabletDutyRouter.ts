@@ -7,7 +7,8 @@ import {
   QrTag,
   QrAccountLogin,
   GetContractDetail,
-  QrCommute
+  QrCommute,
+  FaceCommute
 } from '../service/duty';
 
 const tabletDutyRouter = express.Router();
@@ -28,5 +29,6 @@ tabletDutyRouter.post('/qrtag', QrTag);
 tabletDutyRouter.post('/qraccount', QrAccountLogin);
 tabletDutyRouter.post('/contract/detail', auth, GetContractDetail);
 tabletDutyRouter.post('/qrcommute', QrCommute);
+tabletDutyRouter.post('/facecommute', FaceCommute);
 
 export default tabletDutyRouter;

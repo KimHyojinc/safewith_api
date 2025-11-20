@@ -3,6 +3,7 @@ import QrTag from './qrTag';
 import QrAccountLogin from './qrAccountLogin';
 import QrCommute from './qrCommute';
 import GetContractDetail from './getContractDetail';
+import FaceCommute from './faceCommute';
 
 export {
   QrLogin,
@@ -10,4 +11,5 @@ export {
   QrAccountLogin,
   QrCommute,
   GetContractDetail,
+  FaceCommute
 }

@@ -12,7 +12,6 @@ import { AdminType } from '../../shared/enums';
  * @param pw 비밀번호 (비밀번호를 base64로 인코딩한 값)
  * @summary 관리자 로그인
  */
-// [2025-11-07] NOTE: 혹시 나중에 admin, worker 구분해야하면, jwt payload로 구분
 async function Login(req: Request, res: Response) {
     const { id, pw } = req.body;
     
@@ -76,7 +75,7 @@ async function Login(req: Request, res: Response) {
             const clientInfo = clientInstance.get({ plain: true });
 
             // token, cookie
-            // NOT_SURE: payload에 AdminType 정보 담기 
+            // payload에 AdminType 정보 담기 
             const auth_code =
                 accountInfo.auth_code === AdminType.SYSTEM ? AdminType.SYSTEM
                     : accountInfo.auth_code === AdminType.MASTER ? AdminType.MASTER

@@ -17,7 +17,7 @@ async function FaceTemplate(req: Request, res: Response) {
       code: number;
       name: string;
       mobile: string;
-      face: string;
+      face?: string;
     }[] = [];
 
     if (!contactInfoItems || contactInfoItems.length <= 0) {
@@ -34,7 +34,7 @@ async function FaceTemplate(req: Request, res: Response) {
         code: item.account_code,
         name: item.name,
         mobile: item.mobile,
-        face: item.face ?? "",
+        face: item.face,
       };
 
       workers.push(workerFaceItem);

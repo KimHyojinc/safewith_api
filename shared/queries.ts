@@ -1,22 +1,19 @@
 import { Op, QueryTypes } from 'sequelize';
 import { models, sequelize } from '../data-source';
-import { SiteNameDto } from './site-name';
 import { tb_accountAttributes, tb_commuteAttributes, tb_contractAttributes, tb_edu_judge_contentsAttributes, tb_edu_judgeAttributes, tb_edu_sch_memberAttributes, tb_health_alcoholAttributes, tb_health_bpAttributes, tb_health_oxygenAttributes, tb_health_stressAttributes, tb_partnerAttributes, tb_site_config, tb_site_configAttributes, tb_tbm_stateAttributes, tb_tbmAttributes } from '../models/init-models';
 import { CommuteState, ContractState, ContractType } from './enums';
 import dayjs from 'dayjs';
 
-/*
-** 
-** queries
-**
-*/
-
+/////             /////
+/////             /////
+/////   Queries   /////
+/////             /////
+/////             /////
 
 /**
  * 
  * @param groupName 그룹명 (tb_lib)
  * @param code 고유코드 (tb_lib)
- * @returns view_text
  * @summary tb_lib에서 group_name과 code를 기준으로 view_text 조회
  */
 export async function queryLibLabel(groupName: string, code: number) {
@@ -36,10 +33,15 @@ export async function queryLibLabel(groupName: string, code: number) {
 /**
  * 
  * @param client_code 발주처고유코드
- * @returns 현장리스트
  * @summary 현장 리스트 조회
  */
 export async function querySites(client_code: number = -1) {
+  type SiteNameDto = {
+    no: number;   // 1-based index
+    code: number; // site code
+    name: string; // site name
+    addr: string; // site address
+  }
   try {
     const rows = await models.tb_site_of_client.findAll({
         include: [{
@@ -1425,6 +1427,12 @@ export async function queryContractsSiteCodeWithTablet(site_code: number) {
   }
 }
 
+/**
+ * 
+ * @param account_code 계정고유코드
+ * @param face 안면인식데이터
+ * @summary tb_account에서 해당 계정고유코드를 가진 record의 face 값 업데이트 
+ */
 export async function updateAccountInfoFace(account_code: number, face: string) {
   try {
     // const existing = await models.tb_account.findByPk(account_code);
@@ -1450,14 +1458,39 @@ export async function updateAccountInfoFace(account_code: number, face: string) 
   }
 }
 
+/**
+ * 
+ * @param face 안면인식데이터
+ * @summary 안면인식데이터와 일치하는 tb_account 정보 가져옴
+ */
+export async function queryAccountInfoWithFace(face: string) {
+  try {
+    const result = await models.tb_account.findOne({
+      where: {
+        face
+      }
+    });
+
+    return result;
+  } catch (error) {
+    console.error('queryAccountInfoWithFace error -- ' + error);
+    return null;
+  }
+}
 
 
 
-/*
-** 
-** custom 함수
-**
-*/
+
+
+
+
+/////                    /////
+/////                    /////
+/////   사용자 정의 함수   /////
+/////                    /////
+/////                    /////
+
+
 
 
 
